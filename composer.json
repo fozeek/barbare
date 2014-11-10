@@ -1,0 +1,21 @@
+{
+    "name": "fozeek/barbare",
+    "description": "The Barbare Framework.",
+    "keywords": ["framework", "fozeek", "fk"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Quentin Deneuve",
+            "email": "quentin.deneuve@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Barbare\\Framework": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
