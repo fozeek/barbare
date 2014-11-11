@@ -10,6 +10,7 @@ class Event
 	protected $data;
 	protected $callbacks;
 	protected $propagation = true;
+	protected $cpt = 0;
 
 	public function __construct($data)
 	{
@@ -34,10 +35,10 @@ class Event
 	}
 
 	public function run() {
-		$cpt = 0;
-		while ($cpt < count($this->callbacks) && $this->propagation) {
-			call_user_func_array($this->callbacks->read($cpt), [$this]);
-			$cpt++;
+		$this->propagation = true;
+		while ($this->cpt < count($this->callbacks) && $this->propagation) {
+			call_user_func_array($this->callbacks->read($cpt, false), [$this]);
+			$this->cpt++;
 		}
 	}
 
