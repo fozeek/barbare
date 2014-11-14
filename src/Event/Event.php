@@ -37,7 +37,7 @@ class Event
 	public function run() {
 		$this->propagation = true;
 		while ($this->cpt < count($this->callbacks) && $this->propagation) {
-			call_user_func_array($this->callbacks->read($cpt, false), [$this]);
+			call_user_func_array($this->callbacks->read($this->cpt, false), [$this]);
 			$this->cpt++;
 		}
 	}
