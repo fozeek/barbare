@@ -5,11 +5,16 @@ namespace Barbare\Framework\View;
 class Layout
 {
 
-    protected $path = 'app/design/';
+    protected $view;
 
+    protected $path = 'app/design/';
     protected $template;
     public $content;
     protected $variables = [];
+
+    public function __construct($view) {
+        $this->view = $view;
+    }
 
     public function setTemplate($template)
     {
@@ -41,6 +46,11 @@ class Layout
         else {
             return false;
         }
+    }
+
+    public function __call($helper, $params) 
+    {
+        return $this->view->__call($helper, $params);
     }
 
 }

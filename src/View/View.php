@@ -28,16 +28,12 @@ class View
 	protected function _loadHelpers() {
 		$config = $this->application->getConfig()->read('helpers');
 		$this->helpers = new Storage();
-		$args = [
-			'application' => $this->application,
-			'view' => $this,
-		];
 		foreach ($config as $key => $value) {
 			$helper = false;
 			if(is_string($value) && class_exists($value)) {
-				$helper = new $value($this->application, $args);
+				$helper = new $value($this->application, $this);
 			} elseif (is_callable($value)) {
-				$helper = $value($this->application, $args);
+				$helper = $value($this->application, $this);
 			} else {
 				$helper = $value;
 			}
@@ -61,7 +57,7 @@ class View
 		if(is_object($this->helpers->read($helper))) {
 			return call_user_func_array([$this->helpers->read($helper), '__invoke'], $params);
 		} else {
-			return call_user_func_array($this->helpers->read($helper), $params);
+			return call_user_func_array($this->helpers->read($helper), array_merge($params));
 		}
 	}
 
