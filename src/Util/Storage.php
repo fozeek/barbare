@@ -52,7 +52,7 @@ class Storage implements IteratorAggregate
 			is_array($result)
 			&& $preserve
 		) {
-			return new Self($result);
+			return new Storage($result);
 		} else {
 			return $result;
 		}
