@@ -31,7 +31,7 @@ class Router
 			}
 		}
 		if(!$found) {
-			$value = $this->config['404'];
+			$value = $this->config->toArray()['404'];
 			$params = [];
 		}
 		return new Route($value['controller'], $value['action'], $params);

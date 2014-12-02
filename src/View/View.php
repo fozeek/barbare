@@ -105,9 +105,10 @@ class View
 		$this->layout->render($content);
 	}
 
-	public function partial($template)
+	public function partial($template, $variables = array())
 	{
 		extract($this->variables);
+		extract($variables);
 		include $this->path.$template.'.tpl';
 	}
 
