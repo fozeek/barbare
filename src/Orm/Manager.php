@@ -16,7 +16,7 @@ class Manager
             $this->behaviors[$name] = $behavior($app, $this);
         }
         foreach ($app->getConfig()->read('models') as $name => $repository) {
-            $this->repositories[] = new $repository($this);
+            $this->repositories[$name] = new $repository($this);
         }
 
         // echo '<pre>';
@@ -27,6 +27,11 @@ class Manager
     public function getBehavior($name) 
     {
         return $this->behaviors[$name];
+    }
+
+    public function get($repository)
+    {
+        return $this->repositories[$repository];
     }
 	
 }

@@ -14,6 +14,8 @@ class Controller
 	{
 		$this->application = $application;
 		$this->_loadComponents();
+
+		$this->init();
 	}
 
 	protected function _loadComponents()
@@ -39,6 +41,11 @@ class Controller
 		} else {
 			return $this->attribut;
 		}
+	}
+
+	public function init()
+	{
+		
 	}
 	
 }

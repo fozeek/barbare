@@ -34,14 +34,24 @@ class Route
 		return $route;
 	}
 
-	public function getController()
+	public function getController($long = true)
 	{
-		return $this->controller;
+		if($long) {
+			return $this->controller;
+		} else {
+			$exp = explode('\\', $this->controller);
+			return end($exp);
+		}
 	}
 
-	public function getAction()
+	public function getAction($long = true)
 	{
-		return $this->action;
+		if($long) {
+			return $this->action;
+		} else {
+			$exp = explode('\\', $this->action);
+			return end($exp);
+		}
 	}
 
 	public function getParams()

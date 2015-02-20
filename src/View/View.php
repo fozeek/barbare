@@ -7,7 +7,7 @@ use Barbare\Framework\Util\Storage;
 class View
 {
 
-	protected $path = 'app/design/';
+	protected $path;
 
 	protected $headers = [];
 	protected $application;
@@ -79,6 +79,11 @@ class View
 	public function setLayout($layout)
 	{
 		$this->layout = $layout;
+	}
+
+	public function setPath($path)
+	{
+		$this->path = $path;
 	}
 
 	public function addBlock($block) 
