@@ -7,7 +7,7 @@ use Barbare\Framework\Mvc\Component;
 class Auth extends Component
 {
 
-    private $user;
+    private $user = false;
 
     public function __construct($app, $controller)
     {
@@ -16,14 +16,19 @@ class Auth extends Component
         }
     }
 
-    public function connect()
+    public function connect($pseudo, $password)
     {
-        return false;
+        $user = $controller->Model->User->findByPseudo($pseudo);
+        if($user && $user->getPassword() == md5($password)) {
+            return $this->user = $user;
+        } else {
+            return $this->user = false;
+        }
     }
 
     public function disconnect()
     {
-        return false;
+        $this->user = false;
     }
 
     public function getUser()
