@@ -26,10 +26,16 @@ class Controller
 			'application' => $this->application,
 			'controller' => $this,
 		];
-		foreach ($config as $key => $value) {
+		foreach ($config as $key => $component) {
 			$this->components->write(
 				$key, 
-				(is_callable($value)) ? call_user_func_array($value, [$this->application, $args]) : new $value($this->application, $args)
+				(is_callable($component)) ? 
+					call_user_func_array($component, [$this->application, $this]) : 
+					(
+						(is_object($component)) ? 
+							$component :
+							new $component($this->application, $this)
+					)
 			);
 		}
 	}
@@ -45,7 +51,7 @@ class Controller
 
 	public function init()
 	{
-		
+
 	}
 	
 }
