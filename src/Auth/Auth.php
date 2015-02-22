@@ -19,7 +19,7 @@ class Auth extends Component
     public function connect($pseudo, $password)
     {
         $user = $controller->Model->User->findByPseudo($pseudo);
-        if($user && $user->getPassword() == md5($password)) {
+        if($user && hash_equals($user->getPassword(), self::crypt($password))) {
             return $this->user = $user;
         } else {
             return $this->user = false;
@@ -34,5 +34,10 @@ class Auth extends Component
     public function getUser()
     {
         return $this->user;
+    }
+
+    public static crypt($password)
+    {
+        return md5(crypt($password, 'MY&SALT@VERY#COOL?THUG'));
     }
 }
