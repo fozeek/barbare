@@ -106,8 +106,9 @@ class View
 		$this->variables = array_merge($this->variables, $array);
 	}
 
-	public function render()
+	public function render($vars)
 	{
+		$this->setVariables($vars);
 		extract($this->variables);
 		ob_start();
 		include $this->path.$this->template.'.tpl';
