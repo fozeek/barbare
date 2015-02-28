@@ -12,16 +12,21 @@ class Manager
 	public function __construct($app)
 	{
 
+        DbConnect::addUser('default', [
+            'host' => 'localhost',
+            'database' => 'socialab',
+            'user' => 'root',
+            'password' => 'root'
+        ]);
+
+        DbConnect::connect('default');
+
         foreach ($app->getconfig()->read('orm.behaviors') as $name => $behavior) {
             $this->behaviors[$name] = $behavior($app, $this);
         }
         foreach ($app->getConfig()->read('models') as $name => $repository) {
-            $this->repositories[$name] = new $repository($this);
+            $this->repositories[$name] = new $repository($name, $this);
         }
-
-        // echo '<pre>';
-        // var_dump($this);die;
-        // echo '</pre>';
 	}
 
     public function getBehavior($name) 

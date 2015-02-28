@@ -383,13 +383,10 @@ class QueryBuilder {
     }
 
     public function fetchArray() {
-    $requete = $this->getRequete();
-    $return = array();
-    self::$COUNT += 1;
-    self::$HISTO[] = $requete;
-    foreach (DbConnect::getConnection()->query($requete) as $ligne)
-        $return[] = $ligne;
-    return $return;
+        $requete = $this->getRequete();
+        self::$COUNT += 1;
+        self::$HISTO[] = $requete;
+        return DbConnect::getConnection()->query($requete)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function fetchClassArray() {

@@ -44,6 +44,11 @@ class View
 		}
 	}
 
+	public function getHelper($name)
+	{
+		return $this->helpers->read($name);
+	}
+
 	public function __get($key) 
 	{
 		if(array_key_exists($key, $this->variables)) {

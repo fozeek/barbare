@@ -5,7 +5,7 @@ namespace Barbare\Framework\Orm;
 use PDO;
 use PDOException;
 
-class Connect {
+class DbConnect {
     private static $connection;
     private static $users;
     static public function addUser($name, $params) {
@@ -30,11 +30,13 @@ class Connect {
                 } catch (PDOException $e) {
                     $connected = false;
                 }
-                if ($connected)
+                if ($connected) {
                     break;
+                }
             }
-            if (!$connected)
+            if (!$connected) {
                 header("Location:/setconfig.php");
+            }
         }
     }
 }
