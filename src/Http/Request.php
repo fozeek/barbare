@@ -24,11 +24,20 @@ class Request
 		return $_SERVER['REQUEST_URI'];
 	}
 
-	public function getData() {
-		return array_merge(
+	public function getData($key = false) {
+		$data = array_merge(
 			$_REQUEST,
 			$_FILES
 		);
+		if($key) {
+			$data = $data[$key];
+		}
+		return $data;
+	}
+
+	public function is($method)
+	{
+		return strtolower($method) == strtolower($_SERVER['REQUEST_METHOD']);
 	}
 
 	public function getRoute() {

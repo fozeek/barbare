@@ -10,17 +10,15 @@ class Repository
     private $manager;
     private $structure;
 
-    private $tableName;
-    private $entityClassName;
+    protected $tableName;
+    protected $entityClassName;
 
     private $collections = []; // Cache all collections retrived in single execution
 
     private $methods = [];
 
-    public function __construct($tableName, $manager) {
-        $this->tableName = $tableName;
+    public function __construct($manager) {
         $this->manager = $manager;
-        $this->entityClassName = 'App\Model\Entity\\'.ucfirst($tableName);
         //$this->structure = new Structure($this);
         //$this->structure($this->structure);
 
@@ -41,9 +39,21 @@ class Repository
         return $this->entityClassName;
     }
 
+    public function setEntityClassName($entityClassName)
+    {
+        $this->entityClassName = $entityClassName;
+        return $this;
+    }
+
     public function getManager()
     {
         return $this->manager;
+    }
+
+    public function setTableName($tableName)
+    {
+        $this->tableName = $tableName;
+        return $this;
     }
 
     // public function __call($function, $params)

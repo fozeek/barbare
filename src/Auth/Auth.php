@@ -11,15 +11,17 @@ class Auth extends Component
 
     public function __construct($app, $controller)
     {
-        if(isset($controller->Session->hasParam['id'])) {
-            $this->user = $controller->Model->User->findById($controller->Session->getParam['id']);
+        $this->controller = $controller;
+        if($this->controller->Session->has('id')) {
+            $this->user = $controller->Model->get('user')->findById($controller->Session->get('id'));
         }
     }
 
     public function connect($pseudo, $password)
     {
-        $user = $controller->Model->User->findByPseudo($pseudo);
-        if($user && hash_equals($user->getPassword(), self::encrypt($password))) {
+        $user = $this->controller->Model->get('user')->findByPseudo($pseudo);
+        if($user && $user->password == self::encrypt($password)) { // hash_equals for PHP >= 5.6
+            $this->controller->Session->add('id', $user->id);
             return $this->user = $user;
         } else {
             return $this->user = false;
@@ -28,7 +30,13 @@ class Auth extends Component
 
     public function disconnect()
     {
+        $this->controller->Session->remove('id');
         $this->user = false;
+    }
+
+    public function isConnected()
+    {
+        return $this->user !== false;
     }
 
     public function getUser()

@@ -2,6 +2,8 @@
 
 namespace Barbare\Framework\Orm;
 
+use Barbare\Framework\Orm\Repository\Repository;
+
 class Manager
 {
 
@@ -25,7 +27,11 @@ class Manager
             $this->behaviors[$name] = $behavior($app, $this);
         }
         foreach ($app->getConfig()->read('models') as $name => $repository) {
-            $this->repositories[$name] = new $repository($name, $this);
+            if(is_string($repository)) {
+                $this->repositories[$name] = new $repository($name, $this);
+            } else {
+                $this->repositories[$name] = $repository(new Repository($name, $this));
+            }
         }
 	}
 
