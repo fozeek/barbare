@@ -83,6 +83,17 @@ class Repository
     //         call_user_func_array(array($this, $function), $params);
     //     }
     // }
+    protected function beforeSave($data)
+    {
+        return $data;
+    }
+
+    public function create($attributs)
+    {
+        $res = QueryBuilder::create()->insert($this->tableName)->columnsValues($this->beforeSave($attributs))->execute();
+        $entityClassName = $this->getEntityClassName();
+        return new $entityClassName($attributs);
+    }
 
     public function findById($id)
     {

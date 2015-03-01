@@ -8,6 +8,11 @@ use PDOException;
 // FAIRE UN SYSTEME DE CACHE AU LIEU DE CA !!
 $GLOBALS["SQL_existing_table"] = array();
 
+function is_assoc($arr)
+{
+    return array_keys($arr) !== range(0, count($arr) - 1);
+}
+
 /*
   Class User
   Description :
