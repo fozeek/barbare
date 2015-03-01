@@ -89,4 +89,9 @@ class Repository
         return new DBCollection($this, QueryBuilder::create()->from($this->tableName)->fetchArray());
     }
 
+    public function save($entity)
+    {
+        return QueryBuilder::create()->update($this->tableName)->where('id', '=', $entity->id)->columnsValues($entity->toArray());
+    }
+
 }

@@ -106,7 +106,7 @@ class View
 		$this->variables = array_merge($this->variables, $array);
 	}
 
-	public function render($vars)
+	public function render($vars = array())
 	{
 		$this->setVariables($vars);
 		extract($this->variables);
