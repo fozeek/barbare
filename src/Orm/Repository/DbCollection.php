@@ -11,14 +11,9 @@ class DbCollection implements Iterator
     private $repository;
     private $position = 0;
 
-    public function __construct($repository, $data)
+    public function __construct($collection)
     {
-        $this->repository = $repository;
-
-        foreach ($data as $values) {
-            $entityClassName = $repository->getEntityClassName();
-            $this->data[] = new $entityClassName($values);
-        }
+        $this->data = $collection;
     }
 
     public function each($cb)
@@ -26,6 +21,7 @@ class DbCollection implements Iterator
         foreach ($this->data as $key => $entity) {
             $this->data[$key] = $cb($entity);
         }
+        return $this;
     }
 
     public function filter($cb)
@@ -37,13 +33,13 @@ class DbCollection implements Iterator
             }
         }
         $this->data = $res;
-        return $res;
+        return $this;
     }
 
     public function slice($offset, $length = 20)
     {
         $this->data = array_slice($this->data, $offset, $length);
-        return $this->data;
+        return $this;
     }
 
     function rewind() {

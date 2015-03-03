@@ -107,7 +107,12 @@ class Repository
 
     public function findAll($attr)
     {
-        return new DBCollection($this, QueryBuilder::create()->from($this->tableName)->fetchArray());
+        $collection = [];
+        $entityClassName = $this->getEntityClassName();
+        foreach (QueryBuilder::create()->from($this->tableName)->fetchArray() as $values) {
+            $collection[] = new $entityClassName($values);
+        }
+        return new DBCollection($collection);
     }
 
     public function save($entity)

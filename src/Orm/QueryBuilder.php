@@ -85,23 +85,23 @@ class QueryBuilder {
     }
 
     public function columns($columns = null) {
-    if (is_array($columns)) {
-        $this->columns = $columns;
-    } else {
-        for ($cpt = 0; $cpt < func_num_args(); $cpt++)
-        $this->columns[] = func_get_arg($cpt);
-    }
-    return $this;
+        if (is_array($columns)) {
+            $this->columns = $columns;
+        } else {
+            for ($cpt = 0; $cpt < func_num_args(); $cpt++)
+            $this->columns[] = func_get_arg($cpt);
+        }
+        return $this;
     }
 
     public function values($values = null) {
-    if (is_array($values)) {
-        $this->values = $values;
-    } else {
-        for ($cpt = 0; $cpt < func_num_args(); $cpt++)
-        $this->values[] = func_get_arg($cpt);
-    }
-    return $this;
+        if (is_array($values)) {
+            $this->values = $values;
+        } else {
+            for ($cpt = 0; $cpt < func_num_args(); $cpt++)
+            $this->values[] = func_get_arg($cpt);
+        }
+        return $this;
     }
 
     /*
@@ -112,279 +112,257 @@ class QueryBuilder {
       columnsValues(array("collonne1" => "value1", "collonne2" => "value2")); // Tableau associatif
 
      */
-
     public function columnsValues($columns, $values = null) {
-    $novalues = false; // Variable pour forcer le faite de ne pas prendre en compte $values
-    if (!is_array($columns))
-        $columns = array($columns);
-    else {
-        if (is_assoc($columns)) {
-        $novalues = true;
-        $tmpTab = $columns;
-        $columns = array();
-        foreach ($tmpTab as $key => $value) {
-            $columns[] = $key;
-            $values[] = $value;
-        }
-        } else {
-        if ($values == null && sizeof($columns) == sizeof($values) && sizeof($values) > 0) {
-            return new Error(7);
-        }
-        }
-    }
-    if (!$novalues) {
-        if ($values != null) {
-        if (!is_array($values))
-            $values = array($values);
+        $novalues = false; // Variable pour forcer le faite de ne pas prendre en compte $values
+        if (!is_array($columns))
+            $columns = array($columns);
         else {
-            if (is_assoc($values)) {
-            return new Error(8);
+            if (is_assoc($columns)) {
+            $novalues = true;
+            $tmpTab = $columns;
+            $columns = array();
+            foreach ($tmpTab as $key => $value) {
+                $columns[] = $key;
+                $values[] = $value;
+            }
+            } else {
+            if ($values == null && sizeof($columns) == sizeof($values) && sizeof($values) > 0) {
+                return new Error(7);
+            }
             }
         }
-        } else {
-        echo "prout !!";
-        return new Error(5);
+        if (!$novalues) {
+            if ($values != null) {
+            if (!is_array($values))
+                $values = array($values);
+            else {
+                if (is_assoc($values)) {
+                return new Error(8);
+                }
+            }
+            } else {
+            echo "prout !!";
+            return new Error(5);
+            }
         }
-    }
 
-    $this->columns = array_merge($this->columns, $columns);
-    $this->values = array_merge($this->values, $values);
-    return $this;
+        $this->columns = array_merge($this->columns, $columns);
+        $this->values = array_merge($this->values, $values);
+        return $this;
     }
 
     public function from($from) {
-    $this->type = self::$TYPE_SELECT;
-    if (is_array($from)) {
-        foreach ($from as $value) {
-        $this->from[] = $value;
+        $this->type = self::$TYPE_SELECT;
+        if (is_array($from)) {
+            foreach ($from as $value) {
+            $this->from[] = $value;
+            }
+        } else {
+            for ($cpt = 0; $cpt < func_num_args(); $cpt++)
+            $this->from[] = func_get_arg($cpt);
         }
-    } else {
-        for ($cpt = 0; $cpt < func_num_args(); $cpt++)
-        $this->from[] = func_get_arg($cpt);
-    }
-    return $this;
+        return $this;
     }
 
     public static function n($class) {
-    return new $class();
+        return new $class();
     }
 
     public function where($attribut, $condition = null, $param = null, $typeVar = true) {
-    if (is_object($attribut))
-        $this->where[] = $attribut;
-    elseif ($condition == null)
-        $this->where[] = $attribut;
-    else
-        $this->where[] = array("where", $attribut, $condition, $param, $typeVar);
-    return $this;
+        if (is_object($attribut))
+            $this->where[] = $attribut;
+        elseif ($condition == null)
+            $this->where[] = $attribut;
+        else
+            $this->where[] = array("where", $attribut, $condition, $param, $typeVar);
+        return $this;
     }
 
     public function union($table, $fields) {
-    array_push($this->union, array($table, $fields));
-    return $this;
+        array_push($this->union, array($table, $fields));
+        return $this;
     }
 
     public function andWhere($attribut, $condition = null, $param = null, $typeVar = true) {
-    if (is_object($attribut))
-        $this->where[] = $attribut;
-    elseif ($condition == null)
-        $this->where[] = $attribut;
-    else
-        $this->where[] = array("andwhere", $attribut, $condition, $param, $typeVar);
-    return $this;
+        if (is_object($attribut))
+            $this->where[] = $attribut;
+        elseif ($condition == null)
+            $this->where[] = $attribut;
+        else
+            $this->where[] = array("andwhere", $attribut, $condition, $param, $typeVar);
+        return $this;
     }
 
     public function orWhere($attribut, $condition = null, $param = null, $typeVar = true) {
-    if (is_object($attribut))
-        $this->where[] = $attribut;
-    elseif ($condition == null)
-        $this->where[] = $attribut;
-    else
-        $this->where[] = array("orwhere", $attribut, $condition, $param, $typeVar);
-    return $this;
+        if (is_object($attribut))
+            $this->where[] = $attribut;
+        elseif ($condition == null)
+            $this->where[] = $attribut;
+        else
+            $this->where[] = array("orwhere", $attribut, $condition, $param, $typeVar);
+        return $this;
     }
 
     public function orderBy($column, $way = null) {
-    if (is_array($column))
-        $this->orderby = $column;
-    else
-        $this->orderby = array($column, $way);
-    return $this;
+        if (is_array($column))
+            $this->orderby = $column;
+        else
+            $this->orderby = array($column, $way);
+        return $this;
     }
 
     public function limit($start = 0, $end = null) {
-    $this->limit = array($start, $end);
-    return $this;
+        $this->limit = array($start, $end);
+        return $this;
     }
 
     public function groupBy($group) {
-    $this->group = $group;
-    return $this;
+        $this->group = $group;
+        return $this;
     }
 
     private function getRequete() {
-    $requete = "";
-    if ($this->type == self::$TYPE_SELECT)
-        $requete = $this->getselectRequete();
-    elseif ($this->type == self::$TYPE_INSERT)
-        $requete = $this->getInsertRequete();
-    elseif ($this->type == self::$TYPE_UPDATE)
-        $requete = $this->getUpdateRequete();
-    elseif ($this->type == self::$TYPE_DELETE)
-        $requete = $this->getDeleteRequete();
-    else
-        return new Error(1);
-    return $requete;
+        $requete = "";
+        if ($this->type == self::$TYPE_SELECT)
+            $requete = $this->getselectRequete();
+        elseif ($this->type == self::$TYPE_INSERT)
+            $requete = $this->getInsertRequete();
+        elseif ($this->type == self::$TYPE_UPDATE)
+            $requete = $this->getUpdateRequete();
+        elseif ($this->type == self::$TYPE_DELETE)
+            $requete = $this->getDeleteRequete();
+        else
+            return new Error(1);
+        return $requete;
     }
 
     private function getSelectRequete() {
-    $this->class = ucfirst($this->from[0]);
-    $requete = "SELECT ";
-    // SELECT
-    if (empty($this->select))
-        $requete .= "*";
-    elseif (is_array($this->select)) {
-        $cpt = 0;
-        foreach ($this->select as $value) {
-        if ($cpt != 0)
-            $requete .= ", ";
-        $requete .= $value;
-        $cpt++;
+        $this->class = ucfirst($this->from[0]);
+        $requete = "SELECT ";
+        // SELECT
+        if (empty($this->select))
+            $requete .= "*";
+        elseif (is_array($this->select)) {
+            $cpt = 0;
+            foreach ($this->select as $value) {
+            if ($cpt != 0)
+                $requete .= ", ";
+            $requete .= $value;
+            $cpt++;
+            }
         }
-    }
-    else {
-        $requete .= $this->select;
-    }
+        else {
+            $requete .= $this->select;
+        }
 
-    // FROM
-    $requete .= " FROM ";
-    $cpt = 0;
-    foreach ($this->from as $value) {
-        if ($cpt != 0)
-        $requete .= " " . chr($cpt + 64) . ", ";
-        $requete .= $value;
-        $cpt++;
-    }
-    $requete .= " " . chr($cpt + 64) . "";
-
-    // WHERE
-    $requete .= $this->getWhereString();
-
-    if (!empty($this->union)) {
-        foreach ($this->union as $union) {
-        $requete .= " UNION SELECT ";
+        // FROM
+        $requete .= " FROM ";
         $cpt = 0;
-        foreach ($union[1] as $value) {
+        foreach ($this->from as $value) {
+            if ($cpt != 0)
+            $requete .= " " . chr($cpt + 64) . ", ";
+            $requete .= $value;
+            $cpt++;
+        }
+        $requete .= " " . chr($cpt + 64) . "";
+
+        // WHERE
+        $requete .= $this->getWhereString();
+
+        if (!empty($this->union)) {
+            foreach ($this->union as $union) {
+            $requete .= " UNION SELECT ";
+            $cpt = 0;
+            foreach ($union[1] as $value) {
+                if ($cpt != 0)
+                $requete .= ", ";
+                $requete .= $value;
+                $cpt++;
+            }
+            $requete .= " FROM $union[0] ";
+            $requete .= " " . chr($cpt + 64) . "";
+            $requete .= $this->getWhereString();
+            }
+        }
+
+        if (!empty($this->group))
+            $requete .= " GROUP BY " . $this->group;
+
+        // ORDER BY
+        if (!empty($this->orderby)) {
+            $requete .= " ORDER BY " . $this->orderby[0] . " " . $this->orderby[1];
+        }
+        // LIMIT
+        if (!empty($this->limit)) {
+            $requete .= " LIMIT " . $this->limit[0];
+            if ($this->limit[1] != null)
+            $requete .= ", " . $this->limit[1];
+        }
+
+        return $requete;
+    }
+
+    private function getInsertRequete() {
+        $requete = "INSERT INTO ";
+        $requete .= mb_strtolower($this->class) . " (";
+        $cpt = 0;
+        foreach ($this->columns as $key => $value) {
             if ($cpt != 0)
             $requete .= ", ";
             $requete .= $value;
             $cpt++;
         }
-        $requete .= " FROM $union[0] ";
-        $requete .= " " . chr($cpt + 64) . "";
-        $requete .= $this->getWhereString();
+        $requete .= ") VALUES (";
+        $cpt = 0;
+        foreach ($this->values as $key => $value) {
+            if (is_string($value))
+            $cote = '\''; else
+            $cote = '';
+            if (empty($value) && $value != "0") {
+            $value = 'NULL';
+            $cote = '';
+            }
+            if ($cpt != 0)
+            $requete .= ", ";
+            $requete .= $cote . addslashes($value) . $cote;
+            $cpt++;
         }
-    }
-
-
-
-    if (!empty($this->group))
-        $requete .= " GROUP BY " . $this->group;
-
-    // ORDER BY
-    if (!empty($this->orderby)) {
-        $requete .= " ORDER BY " . $this->orderby[0] . " " . $this->orderby[1];
-    }
-    // LIMIT
-    if (!empty($this->limit)) {
-        $requete .= " LIMIT " . $this->limit[0];
-        if ($this->limit[1] != null)
-        $requete .= ", " . $this->limit[1];
-    }
-
-    return $requete;
-    }
-
-    private function getInsertRequete() {
-    $requete = "INSERT INTO ";
-    $requete .= mb_strtolower($this->class) . " (";
-    $cpt = 0;
-    foreach ($this->columns as $key => $value) {
-        if ($cpt != 0)
-        $requete .= ", ";
-        $requete .= $value;
-        $cpt++;
-    }
-    $requete .= ") VALUES (";
-    $cpt = 0;
-    foreach ($this->values as $key => $value) {
-        if (is_string($value))
-        $cote = '\''; else
-        $cote = '';
-        if (empty($value) && $value != "0") {
-        $value = 'NULL';
-        $cote = '';
-        }
-        if ($cpt != 0)
-        $requete .= ", ";
-        $requete .= $cote . addslashes($value) . $cote;
-        $cpt++;
-    }
-    $requete .= ")";
-    return $requete;
+        $requete .= ")";
+        return $requete;
     }
 
     private function getUpdateRequete() {
-    if (count($this->columns) == count($this->values) && count($this->values) > 0) {
-        $requete = "UPDATE " . mb_strtolower($this->from) . " SET ";
-        $cpt = 0;
-        foreach ($this->columns as $key => $value) {
-        if (is_string($this->values[$cpt]))
-            $cote = '\''; else
-            $cote = '';
-        if ($cpt != 0)
-            $requete .= ", ";
-        $requete .= $value . " = " . $cote . addslashes($this->values[$cpt]) . $cote;
-        $requete .= "";
-        $cpt++;
+        if (count($this->columns) == count($this->values) && count($this->values) > 0) {
+            $requete = "UPDATE " . mb_strtolower($this->from) . " SET ";
+            $cpt = 0;
+            foreach ($this->columns as $key => $value) {
+            if (is_string($this->values[$cpt]))
+                $cote = '\''; else
+                $cote = '';
+            if ($cpt != 0)
+                $requete .= ", ";
+            $requete .= $value . " = " . $cote . addslashes($this->values[$cpt]) . $cote;
+            $requete .= "";
+            $cpt++;
+            }
+            if (!empty($this->where)) {
+            $requete .= $this->getWhereString();
+            }
+            return $requete;
         }
-        if (!empty($this->where)) {
-        $requete .= $this->getWhereString();
-        }
-        return $requete;
-    }
-    else
-        return new Error(4);
+        else
+            return new Error(4);
     }
 
     private function getDeleteRequete() {
-    if (true) {
-        $requete = "DELETE FROM " . mb_strtolower($this->from) . " ";
-        if (!empty($this->where))
-            $requete .= $this->getWhereString();
-        return $requete;
-    }
-    else
-        return new Error(4);
-    }
-
-    public function fetchClass() {
-    if ($this->type == self::$TYPE_SELECT) {
-        $requete = $this->getRequete();
-        if (!class_exists($this->class))
-        $class = "Std";
-        else
-        $class = $this->class;
-        self::$COUNT += 1;
-        self::$HISTO[] = $requete;
-        $return = DbConnect::getConnection()->query($requete)->fetchObject($class);
-        if (method_exists($return, 'setNameClass')) {
-        $return->setNameClass($this->class);
+        if (true) {
+            $requete = "DELETE FROM " . mb_strtolower($this->from) . " ";
+            if (!empty($this->where))
+                $requete .= $this->getWhereString();
+            return $requete;
         }
-        return $return;
-    }
-    else
-        return new Error(2);
+        else
+            return new Error(4);
     }
 
     public function fetchArray() {
@@ -392,22 +370,6 @@ class QueryBuilder {
         self::$COUNT += 1;
         self::$HISTO[] = $requete;
         return DbConnect::getConnection()->query($requete)->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function fetchClassArray() {
-    if ($this->type == self::$TYPE_SELECT) {
-        $requete = $this->getRequete();
-        $collection = new Collection();
-        self::$COUNT += 1;
-        self::$HISTO[] = $requete;
-        foreach (DbConnect::getConnection()->query($requete) as $value) {
-        $object = OrmStdAbstract::n($this->class)->hydrate($value);
-        $collection->hydrate($object);
-        }
-        return $collection;
-    }
-    else
-        return new Error(2);
     }
 
     public function query($requete) {
@@ -418,121 +380,81 @@ class QueryBuilder {
     }
 
     public function execute() {
-    if ($this->type == self::$TYPE_INSERT || $this->type == self::$TYPE_UPDATE || $this->type == self::$TYPE_DELETE) {
-        $requete = $this->getRequete();
-        array_push(self::$_historique, $requete);
-        if (DbConnect::getConnection()->exec($requete)) {
-        if ($this->type == self::$TYPE_INSERT)
-            return DbConnect::getConnection()->lastInsertId();
-        else
-            return true;
+        if ($this->type == self::$TYPE_INSERT || $this->type == self::$TYPE_UPDATE || $this->type == self::$TYPE_DELETE) {
+            $requete = $this->getRequete();
+            array_push(self::$_historique, $requete);
+            if (DbConnect::getConnection()->exec($requete)) {
+            if ($this->type == self::$TYPE_INSERT)
+                return DbConnect::getConnection()->lastInsertId();
+            else
+                return true;
+            }
+            else
+            return false;
         }
         else
-        return false;
-    }
-    else
-        return false;
+            return false;
     }
 
     public function fetch($rang = 0) {
-    array_push(self::$_historique, $this->getRequete());
-    return DbConnect::getConnection()->query($this->getRequete())->fetchAll(PDO::FETCH_ASSOC);
+        array_push(self::$_historique, $this->getRequete());
+        return DbConnect::getConnection()->query($this->getRequete())->fetchAll(PDO::FETCH_ASSOC);
     }
 
     private function getWhereString() {
-    $requete = "";
-    if (!empty($this->where)) {
-        $requete .= " WHERE ";
-        foreach ($this->where as $key => $value) {
-        if (is_array($value)) {
-            $cote2 = (is_string($value[3]) && $value[4]) ? '\'' : '';
-            if ($value[2] == "IN" || $value[2] == "NOT IN") {
-            if (is_string($value[3][0]))
-                foreach ($value[3] as $key3 => $value3)
-                $value[3][$key3] = "'" . $value3 . "'";
-            $args = "(" . implode(", ", $value[3]) . ")";
+        $requete = "";
+        if (!empty($this->where)) {
+            $requete .= " WHERE ";
+            foreach ($this->where as $key => $value) {
+            if (is_array($value)) {
+                $cote2 = (is_string($value[3]) && $value[4]) ? '\'' : '';
+                if ($value[2] == "IN" || $value[2] == "NOT IN") {
+                if (is_string($value[3][0]))
+                    foreach ($value[3] as $key3 => $value3)
+                    $value[3][$key3] = "'" . $value3 . "'";
+                $args = "(" . implode(", ", $value[3]) . ")";
+                }
+                else
+                $args = $value[3];
+                $requete .= " " . $this->OPE_LOGIC_TAB[$value[0]] . " " . $value[1] . " " . $value[2] . " " . $cote2 . $args . $cote2 . " ";
             }
-            else
-            $args = $value[3];
-            $requete .= " " . $this->OPE_LOGIC_TAB[$value[0]] . " " . $value[1] . " " . $value[2] . " " . $cote2 . $args . $cote2 . " ";
+            elseif (is_string($value)) {
+                $requete .= $value;
+            } else {
+                $requete .= $this->getWhereStringRecursive($value);
+            }
+            }
         }
-        elseif (is_string($value)) {
-            $requete .= $value;
-        } else {
-            $requete .= $this->getWhereStringRecursive($value);
-        }
-        }
-    }
-    return $requete;
+        return $requete;
     }
 
     private function getWhereStringRecursive($object) {
-    $requete = "(";
-    foreach ($object->where as $key2 => $value2) {
-        if (is_array($value)) {
-        $cote2 = (is_string($value[3]) && $value[4]) ? '\'' : '';
-        if ($value[2] == "IN" || $value[2] == "NOT IN") {
-            if (is_string($value[3][0]))
-            foreach ($value[3] as $key3 => $value3)
-                $value[3][$key3] = "'" . $value3 . "'";
-            $args = "(" . implode(", ", $value[3]) . ")";
+        $requete = "(";
+        foreach ($object->where as $key2 => $value2) {
+            if (is_array($value)) {
+            $cote2 = (is_string($value[3]) && $value[4]) ? '\'' : '';
+            if ($value[2] == "IN" || $value[2] == "NOT IN") {
+                if (is_string($value[3][0]))
+                foreach ($value[3] as $key3 => $value3)
+                    $value[3][$key3] = "'" . $value3 . "'";
+                $args = "(" . implode(", ", $value[3]) . ")";
+            }
+            else
+                $args = $value[3];
+            $requete .= " " . $this->OPE_LOGIC_TAB[$value[0]] . " " . $value[1] . " " . $value[2] . " " . $cote2 . $args . $cote2 . " ";
+            }
+            elseif (is_string($value2)) {
+            $requete .= $value2;
+            }
+            else
+            $requete .= $this->getWhereStringRecursive($value2);
         }
-        else
-            $args = $value[3];
-        $requete .= " " . $this->OPE_LOGIC_TAB[$value[0]] . " " . $value[1] . " " . $value[2] . " " . $cote2 . $args . $cote2 . " ";
-        }
-        elseif (is_string($value2)) {
-        $requete .= $value2;
-        }
-        else
-        $requete .= $this->getWhereStringRecursive($value2);
+        $requete .= ")";
+        return $requete;
     }
-    $requete .= ")";
-    return $requete;
-    }
-
-    /*
-
-      public function fetchOne($rang = 0) {
-      return mysql_result(mysql_query($this->requete), $rang);
-      }
-      public function fetch() {
-      return mysql_query($this->requete);
-      }
-      public function fetchArray() {
-      $class = ucfirst($this->class);
-      $collection = new Collection();
-      $sql = mysql_query($this->requete);
-      while($result = mysql_fetch_assoc($sql))
-      $collection->hydrate(Std::n($class)->hydrate($result));
-      return $collection;
-      }
-      public function execute() {
-      if($this->type == self::$_INSERT)
-      $this->insertCreateRequete();
-      else if($this->type == self::$_UPDATE && $this->action)
-      $this->insertInsertRequete();
-      mysql_query($this->requete);
-      return mysql_insert_id();
-      }
-      public function executeClass() {
-      mysql_query($this->requete);
-      return self::create()->from(mb_strtolower($this->class))->where("id=".mysql_insert_id())->fetchClass();
-      }
-
-
-      public function getClassAttribut() {
-      return $this->class;
-      }
-
-     */
 
     public function showRequete() {
-    return $this->getRequete();
-    }
-
-    public static function table_exist($table) {
-    return SQL2_table_exist($table);
+        return $this->getRequete();
     }
 
 }
