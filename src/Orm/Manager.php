@@ -15,10 +15,10 @@ class Manager
 	{
 
         DbConnect::addUser('default', [
-            'host' => 'localhost',
-            'database' => 'socialab',
-            'user' => 'root',
-            'password' => 'root'
+            'host' => $app->getConfig()->read('db.host'),
+            'database' => $app->getConfig()->read('db.database'),
+            'user' => $app->getConfig()->read('db.user'),
+            'password' => $app->getConfig()->read('db.password')
         ]);
 
         DbConnect::connect('default');
