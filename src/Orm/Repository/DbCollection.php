@@ -42,6 +42,20 @@ class DbCollection implements Iterator
         return $this;
     }
 
+    public function contains($entity)
+    {
+        foreach ($this->data as $reference) {
+            if($this->compareEntities($entity, $reference)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function compareEntities($entity1, $entity2) {
+        
+    }
+
     function rewind() {
         $this->position = 0;
     }

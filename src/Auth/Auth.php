@@ -20,8 +20,8 @@ class Auth extends Component
     public function connect($pseudo, $password)
     {
         $user = $this->controller->Model->get('user')->findByPseudo($pseudo);
-        if($user && $user->password == self::encrypt($password)) { // hash_equals for PHP >= 5.6
-            $this->controller->Session->add('id', $user->id);
+        if($user && $user->get('password') == self::encrypt($password)) { // hash_equals for PHP >= 5.6
+            $this->controller->Session->add('id', $user->get('id'));
             return $this->user = $user;
         } else {
             return $this->user = false;
