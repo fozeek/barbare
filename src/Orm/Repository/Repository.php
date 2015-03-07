@@ -93,11 +93,16 @@ class Repository
         return $data;
     }
 
+    protected function afterFind($data)
+    {
+        return $data;
+    }
+
     public function create($attributs)
     {
         $res = QueryBuilder::create()->insert($this->tableName)->columnsValues($this->beforeSave($attributs))->execute();
         $entityClassName = $this->getEntityClassName();
-        return new $entityClassName($attributs);
+        return new $entityClassName($this, $this->afterFind($attributs));
     }
 
     public function findById($id)
@@ -105,7 +110,7 @@ class Repository
         $entityClassName = $this->entityClassName;
         $data = QueryBuilder::create()->from($this->tableName)->where('id', '=', $id)->fetchArray();
         if($data && isset($data[0])) {
-            return new $entityClassName($this, $data[0]);
+            return new $entityClassName($this, $this->afterFind($data[0]));
         }
         return false;
     }
@@ -115,7 +120,7 @@ class Repository
         $collection = [];
         $entityClassName = $this->getEntityClassName();
         foreach (QueryBuilder::create()->from($this->tableName)->fetchArray() as $values) {
-            $collection[] = new $entityClassName($this, $values);
+            $collection[] = new $entityClassName($this, $this->afterFind($values));
         }
         return new DBCollection($collection);
     }

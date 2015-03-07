@@ -16,6 +16,7 @@ class View
 	protected $helpers;
 	protected $content;
 	protected $variables = [];
+	protected $enableLayout = true;
 
 	public function __construct($application)
 	{
@@ -106,6 +107,11 @@ class View
 		$this->variables = array_merge($this->variables, $array);
 	}
 
+	public function disableLayout()
+	{
+		$this->enableLayout = false;
+	}
+
 	public function render($vars = array())
 	{
 		$this->setVariables($vars);
@@ -113,7 +119,11 @@ class View
 		ob_start();
 		include $this->path.$this->template.'.tpl';
 		$content = ob_get_clean();
-		$this->layout->render($content);
+		if($this->enableLayout) {
+			$this->layout->render($content);
+		} else {
+			echo $content;
+		}
 	}
 
 	public function partial($template, $variables = array())

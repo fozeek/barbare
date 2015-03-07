@@ -50,7 +50,7 @@ class Entity
         $collection = [];
         $entityClassName = $foreignRepo->getEntityClassName();
         foreach ($data as $values) {
-            $collection[] = new $entityClassName($foreignRepo, $values);
+            $collection[] = new $entityClassName($foreignRepo, $this->repository->afterFind($values));
         }
         return new DBCollection($collection);
     }
