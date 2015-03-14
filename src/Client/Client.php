@@ -2,7 +2,7 @@
 
 namespace Barbare\Framework\Client;
 
-class Client extends \Local
+class Client
 {
     protected $locale;
 

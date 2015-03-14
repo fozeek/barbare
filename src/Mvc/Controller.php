@@ -13,14 +13,14 @@ abstract class Controller
     {
         $this->application = $application;
         $this->components = new Storage();
-        //$this->_loadComponents();
 
         $this->init();
     }
 
     protected function _loadComponent($key)
     {
-        if ($component = $this->components->read(strtolower($attribut))) {
+        $key = strtolower($key);
+        if ($component = $this->components->read($key)) {
             return $component;
         }
         $config = $this->application->getConfig()->read('components')->read($key);
@@ -42,7 +42,7 @@ abstract class Controller
         return $component;
     }
 
-    public function __get($attribut)
+    public function get($attribut)
     {
         return $this->_loadComponent($attribut);
     }

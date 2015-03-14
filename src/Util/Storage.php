@@ -48,6 +48,9 @@ class Storage implements IteratorAggregate
     {
         $result = $this->storage;
         foreach (explode('.', $key) as $value) {
+            if (!array_key_exists($value, $result)) {
+                return false;
+            }
             $result = $result[$value];
         }
         // On retourne une nouvelle instance de Storage si la recherche correpond aux spécifications d'un storage
