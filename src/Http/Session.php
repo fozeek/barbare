@@ -4,7 +4,6 @@ namespace Barbare\Framework\Http;
 
 class Session
 {
-
     private $data;
 
     public function __construct()
@@ -33,5 +32,4 @@ class Session
         unset($this->data[$key]);
         unset($_SESSION[$key]);
     }
-
 }

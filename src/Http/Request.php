@@ -8,53 +8,55 @@ use Barbare\Framework\Client\Client;
 
 class Request
 {
+    protected $route;
+    protected $app;
+    protected $client;
 
-	protected $route;
-	protected $app;
-	protected $client;
+    public function __construct($app)
+    {
+        $this->app = $app;
+        $this->client = new Client();
+    }
 
-	public function __construct($app)
-	{
-		$this->app = $app;
-		$this->client = new Client();
-	}
+    public function getBaseUrl()
+    {
+        return $_SERVER['REQUEST_URI'];
+    }
 
-	public function getBaseUrl()
-	{
-		return $_SERVER['REQUEST_URI'];
-	}
+    public function getData($key = false)
+    {
+        $data = array_merge(
+            $_REQUEST,
+            $_FILES
+        );
+        if ($key) {
+            $data = $data[$key];
+        }
 
-	public function getData($key = false) {
-		$data = array_merge(
-			$_REQUEST,
-			$_FILES
-		);
-		if($key) {
-			$data = $data[$key];
-		}
-		return $data;
-	}
+        return $data;
+    }
 
-	public function is($method)
-	{
-		return strtolower($method) == strtolower($_SERVER['REQUEST_METHOD']);
-	}
+    public function is($method)
+    {
+        return strtolower($method) == strtolower($_SERVER['REQUEST_METHOD']);
+    }
 
-	public function getRoute() {
-		return $this->route;
-	}
+    public function getRoute()
+    {
+        return $this->route;
+    }
 
-	public function initDispatchEvent()
-	{
-		$this->route = $this->app->getServiceManager()->get('router')->factory($this->getBaseUrl());
-		return new Event([
-			'route' => $this->route
-		]);
-	}
+    public function initDispatchEvent()
+    {
+        $this->route = $this->app->getServiceManager()->get('router')->factory($this->getBaseUrl());
 
-	public function getClient() 
-	{
-		return $this->client;
-	}
+        return new Event([
+            'route' => $this->route,
+        ]);
+    }
 
+    public function getClient()
+    {
+        return $this->client;
+    }
 }

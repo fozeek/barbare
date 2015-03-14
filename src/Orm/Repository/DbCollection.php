@@ -2,11 +2,10 @@
 
 namespace Barbare\Framework\Orm\Repository;
 
-use \Iterator;
+use Iterator;
 
 class DbCollection implements Iterator
 {
-
     private $data = [];
     private $repository;
     private $position = 0;
@@ -21,6 +20,7 @@ class DbCollection implements Iterator
         foreach ($this->data as $key => $entity) {
             $this->data[$key] = $cb($entity);
         }
+
         return $this;
     }
 
@@ -28,52 +28,59 @@ class DbCollection implements Iterator
     {
         $res = [];
         foreach ($this->data as $key => $entity) {
-            if($cb($entity)) {
+            if ($cb($entity)) {
                 $res[] = $entity;
             }
         }
         $this->data = $res;
+
         return $this;
     }
 
     public function slice($offset, $length = 20)
     {
         $this->data = array_slice($this->data, $offset, $length);
+
         return $this;
     }
 
     public function contains($entity)
     {
         foreach ($this->data as $reference) {
-            if($this->compareEntities($entity, $reference)) {
+            if ($this->compareEntities($entity, $reference)) {
                 return true;
             }
         }
+
         return false;
     }
 
-    private function compareEntities($entity1, $entity2) {
-        
+    private function compareEntities($entity1, $entity2)
+    {
     }
 
-    function rewind() {
+    public function rewind()
+    {
         $this->position = 0;
     }
 
-    function current() {
+    public function current()
+    {
         return $this->data[$this->position];
     }
 
-    function key() {
+    public function key()
+    {
         return $this->position;
     }
 
-    function next() {
+    public function next()
+    {
         ++$this->position;
     }
 
-    function valid() {
+    public function valid()
+    {
         return isset($this->data[$this->position]);
     }
-
 }

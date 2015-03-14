@@ -8,6 +8,7 @@ class Behavior
     {
         $clone = clone $this;
         $callback($clone);
+
         return $clone;
     }
 }

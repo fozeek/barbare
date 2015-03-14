@@ -19,18 +19,21 @@ class Field
 
     public function __call($name, $params)
     {
-        if(in_array($name, $this->params)) {
+        if (in_array($name, $this->params)) {
             $this->values[$name] = $params;
+
             return $this;
         }
+
         return false;
     }
 
-    public function __get($name) {
-        if(array_key_exists($name, $this->params))
-        {
+    public function __get($name)
+    {
+        if (array_key_exists($name, $this->params)) {
             return $this->values[$name];
         }
+
         return false;
     }
 
@@ -38,5 +41,4 @@ class Field
     {
         $this->behavior = $this->structure->getRepository()->getManager()->getBehavior($name)->instance($callback);
     }
-
 }

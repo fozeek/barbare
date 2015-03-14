@@ -17,7 +17,8 @@ class Repository
 
     private $methods = [];
 
-    public function __construct($name, $manager) {
+    public function __construct($name, $manager)
+    {
         $this->manager = $manager;
         //$this->structure = new Structure($this);
         //$this->structure($this->structure);
@@ -42,6 +43,7 @@ class Repository
     public function setEntityClassName($entityClassName)
     {
         $this->entityClassName = $entityClassName;
+
         return $this;
     }
 
@@ -53,6 +55,7 @@ class Repository
     public function setTableName($tableName)
     {
         $this->tableName = $tableName;
+
         return $this;
     }
 
@@ -102,6 +105,7 @@ class Repository
     {
         $res = QueryBuilder::create()->insert($this->tableName)->columnsValues($this->beforeSave($attributs))->execute();
         $entityClassName = $this->getEntityClassName();
+
         return new $entityClassName($this, $this->afterFind($attributs));
     }
 
@@ -109,19 +113,21 @@ class Repository
     {
         $entityClassName = $this->entityClassName;
         $data = QueryBuilder::create()->from($this->tableName)->where('id', '=', $id)->fetchArray();
-        if($data && isset($data[0])) {
+        if ($data && isset($data[0])) {
             return new $entityClassName($this, $this->afterFind($data[0]));
         }
+
         return false;
     }
 
-    public function findAll($attr)
+    public function findAll()
     {
         $collection = [];
         $entityClassName = $this->getEntityClassName();
         foreach (QueryBuilder::create()->from($this->tableName)->fetchArray() as $values) {
             $collection[] = new $entityClassName($this, $this->afterFind($values));
         }
+
         return new DBCollection($collection);
     }
 
@@ -129,5 +135,4 @@ class Repository
     {
         return QueryBuilder::create()->update($this->tableName)->where('id', '=', $entity->id)->columnsValues($entity->toArray());
     }
-
 }

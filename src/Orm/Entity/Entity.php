@@ -7,9 +7,8 @@ use Barbare\Framework\Orm\Repository\DBCollection;
 
 class Entity
 {
-
     private $repository;
-    private $attributs;
+    protected $attributs;
     protected $associations;
 
     public function __construct($repository, $attributs)
@@ -25,12 +24,12 @@ class Entity
 
     public function get($attribut)
     {
-        if(isset($this->attributs[$attribut])) {
+        if (isset($this->attributs[$attribut])) {
             return $this->attributs[$attribut];
         } elseif ($this->associations[$attribut]) {
             return $this->_fetchAssoc($this->associations[$attribut]);
-            
         }
+
         return false;
     }
 
@@ -52,6 +51,7 @@ class Entity
         foreach ($data as $values) {
             $collection[] = new $entityClassName($foreignRepo, $this->repository->afterFind($values));
         }
+
         return new DBCollection($collection);
     }
 }

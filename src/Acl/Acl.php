@@ -6,15 +6,15 @@ use Barbare\Framework\Acl\Config\Config;
 
 class Acl
 {
+    protected $config;
 
-	protected $config;
+    public function __construct()
+    {
+        $this->config = new Config();
+    }
 
-	public function __construct()
-	{
-		$this->config = new Config();
-	}
-
-	public function getNamespace($namespace) {
-		return $this->config->getNamespace($namespace);
-	}
+    public function getNamespace($namespace)
+    {
+        return $this->config->getNamespace($namespace);
+    }
 }

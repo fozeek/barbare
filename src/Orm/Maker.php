@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Barabre\Framework\Orm;
 
@@ -12,6 +12,5 @@ class Maker
 {
     public function run(Structure $structure)
     {
-        
     }
 }

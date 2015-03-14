@@ -4,10 +4,8 @@ namespace Barbare\Framework\Client;
 
 class Locale
 {
-    protected $currentLang = 'fr_FR';
-
-    public function getCurrentLang() 
+    public function getCurrentLang()
     {
-        return $this->currentLang;
+        return Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
     }
 }

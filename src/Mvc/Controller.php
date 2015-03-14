@@ -4,60 +4,56 @@ namespace Barbare\Framework\Mvc;
 
 use Barbare\Framework\Util\Storage;
 
-class Controller
+abstract class Controller
 {
+    protected $components;
+    protected $application;
 
-	protected $components;
-	protected $application;
+    public function __construct(Application $application)
+    {
+        $this->application = $application;
+        $this->components = new Storage();
+        //$this->_loadComponents();
 
-	public function __construct(Application $application)
-	{
-		$this->application = $application;
-		$this->_loadComponents();
+        $this->init();
+    }
 
-		$this->init();
-	}
+    protected function _loadComponent($key)
+    {
+        if ($component = $this->components->read(strtolower($attribut))) {
+            return $component;
+        }
+        $config = $this->application->getConfig()->read('components')->read($key);
+        $args = [
+            'application' => $this->application,
+            'controller' => $this,
+        ];
+        if (is_callable($config)) {
+            $component = call_user_func_array($config, [$this->application, $this]);
+        } else {
+            if (is_object($config)) {
+                $component = $config;
+            } else {
+                $component = new $config($this->application, $this);
+            }
+        }
+        $this->components->write($key, $component);
 
-	protected function _loadComponents()
-	{
-		$config = $this->application->getConfig()->read('components');
-		$this->components = new Storage();
-		$args = [
-			'application' => $this->application,
-			'controller' => $this,
-		];
-		foreach ($config as $key => $component) {
-			$this->components->write(
-				$key, 
-				(is_callable($component)) ? 
-					call_user_func_array($component, [$this->application, $this]) : 
-					(
-						(is_object($component)) ? 
-							$component :
-							new $component($this->application, $this)
-					)
-			);
-		}
-	}
+        return $component;
+    }
 
-	public function __get($attribut)
-	{
-		if($attribut[0] != '_') {
-			return $this->components->read(strtolower($attribut));
-		} else {
-			return $this->attribut;
-		}
-	}
+    public function __get($attribut)
+    {
+        return $this->_loadComponent($attribut);
+    }
 
-	public function init()
-	{
+    public function init()
+    {
+    }
 
-	}
-
-	public function redirect($url)
-	{
-		header('Location:'.$url);
-		die;
-	}
-	
+    public function redirect($url)
+    {
+        header('Location:'.$url);
+        die;
+    }
 }

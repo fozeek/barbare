@@ -4,7 +4,6 @@ namespace Barbare\Framework\View;
 
 class Layout
 {
-
     protected $view;
 
     protected $path = 'app/design/';
@@ -12,7 +11,8 @@ class Layout
     public $content;
     protected $variables = [];
 
-    public function __construct($view) {
+    public function __construct($view)
+    {
         $this->view = $view;
     }
 
@@ -31,7 +31,7 @@ class Layout
         $this->variables = array_merge($this->variables, $array);
     }
 
-    public function render($content) 
+    public function render($content)
     {
         $this->content = $content;
         extract($this->variables);
@@ -40,17 +40,15 @@ class Layout
 
     public function __get($key)
     {
-        if(array_key_exists($key, $this->variables)) {
+        if (array_key_exists($key, $this->variables)) {
             return $this->variables[$key];
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function __call($helper, $params) 
+    public function __call($helper, $params)
     {
         return $this->view->__call($helper, $params);
     }
-
 }

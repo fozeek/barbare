@@ -6,13 +6,12 @@ use Barbare\Framework\Mvc\Component;
 
 class Auth extends Component
 {
-
     private $user = false;
 
     public function __construct($app, $controller)
     {
         $this->controller = $controller;
-        if($this->controller->Session->has('id')) {
+        if ($this->controller->Session->has('id')) {
             $this->user = $controller->Model->get('user')->findById($controller->Session->get('id'));
         }
     }
@@ -20,8 +19,9 @@ class Auth extends Component
     public function connect($pseudo, $password)
     {
         $user = $this->controller->Model->get('user')->findByPseudo($pseudo);
-        if($user && $user->get('password') == self::encrypt($password)) { // hash_equals for PHP >= 5.6
+        if ($user && $user->get('password') == self::encrypt($password)) { // hash_equals for PHP >= 5.6
             $this->controller->Session->add('id', $user->get('id'));
+
             return $this->user = $user;
         } else {
             return $this->user = false;
