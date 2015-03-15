@@ -6,6 +6,6 @@ class Locale
 {
     public function getCurrentLang()
     {
-        return Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        return \Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
     }
 }
