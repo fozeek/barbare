@@ -17,9 +17,9 @@ abstract class Controller
         $this->init();
     }
 
-    protected function _loadComponent($key)
+    public function get($attribut)
     {
-        $key = strtolower($key);
+        $key = strtolower($attribut);
         if ($component = $this->components->read($key)) {
             return $component;
         }
@@ -40,11 +40,6 @@ abstract class Controller
         $this->components->write($key, $component);
 
         return $component;
-    }
-
-    public function get($attribut)
-    {
-        return $this->_loadComponent($attribut);
     }
 
     public function init()

@@ -17,11 +17,6 @@ class Entity
         $this->attributs = $attributs;
     }
 
-    // public function __get($attribut)
-    // {
-    //     return $this->attributs[$attribut];
-    // }
-
     public function get($attribut)
     {
         if (isset($this->attributs[$attribut])) {
@@ -40,8 +35,6 @@ class Entity
             ->where($this->get('id'), '=', 'A.'.$this->repository->getTableName().'_id', false)
             ->andWhere('A.'.$assoc['reference'].'_id', '=', 'B.id', false)
             ->fetchArray();
-        //$query = 'SELECT * FROM '.$this->repository->getTableName().'_'.$assoc['reference'].' A, '.$foreignRepo->getTableName().' B WHERE '.$this->get('id').' = A.'.$this->repository->getTableName().'_id AND A.'.$assoc['reference'].'_id = B.id';
-        //$data = QueryBuilder::create()->query($query);
         foreach ($data as $key => $value) {
             unset($data[$key][$this->repository->getTableName().'_id']);
             unset($data[$key][$assoc['reference'].'_id']);

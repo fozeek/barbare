@@ -36,4 +36,15 @@ class Router
 
         return new Route($value['controller'], $value['action'], $params);
     }
+
+    public function url($routeName, $params)
+    {
+        $url = $this->config->read($routeName)->read('url');
+        
+        foreach ($params as $key => $value) {
+            $url = str_replace('{'.$key.'}', $value, $url);
+        }
+
+        return $url;
+    }
 }
