@@ -18,7 +18,7 @@ class Router
         $found = false;
         foreach ($this->config as $name => $value) {
             if (array_key_exists('url', $value)) {
-                if (preg_match_all('#^'.preg_replace('#({[^}]+})#', '([a-zA-Z0-9]+)', $value['url']).'$#', $url, $matches)) {
+                if (preg_match_all('#^'.preg_replace('#({[^}]+})#', '([a-zA-Z0-9\-\_]+)', $value['url']).'$#', $url, $matches)) {
                     preg_match_all('#{([^}]+)}#', $value['url'], $keys);
                     $keys = next($keys);
                     foreach ($keys as $match => $var) {
