@@ -128,7 +128,7 @@ class Repository
             $collection[] = new $entityClassName($this, $this->afterFind($values));
         }
 
-        return new DBCollection($collection);
+        return new DbCollection($collection);
     }
 
     public function save($entity)
