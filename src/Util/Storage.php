@@ -71,6 +71,7 @@ class Storage implements IteratorAggregate
             $insert = &$insert[$folder];
         }
         unset($insert);
+
         return $this;
     }
 
