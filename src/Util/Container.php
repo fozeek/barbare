@@ -38,7 +38,7 @@ class Container
 
     public function reset($key)
     {
-        $this->storage->unset($key);
+        $this->storage->remove($key);
     }
 
     private function _load($cb)

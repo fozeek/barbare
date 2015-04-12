@@ -64,7 +64,7 @@ class Storage implements IteratorAggregate
         }
     }
 
-    public function unset($key)
+    public function remove($key)
     {
         $insert = &$this->storage;
         foreach (explode('.', $key) as $folder) {
