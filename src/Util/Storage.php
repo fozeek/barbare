@@ -64,6 +64,16 @@ class Storage implements IteratorAggregate
         }
     }
 
+    public function unset($key)
+    {
+        $insert = &$this->storage;
+        foreach (explode('.', $key) as $folder) {
+            $insert = &$insert[$folder];
+        }
+        unset($insert);
+        return $this;
+    }
+
     public function toArray()
     {
         return $this->storage;

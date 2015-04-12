@@ -2,7 +2,6 @@
 
 namespace Barbare\Framework\Util;
 
-
 class Container
 {
     protected $factories;
@@ -35,6 +34,11 @@ class Container
     public function add($key, $cb)
     {
         return $this->factories->write($key, $cb);
+    }
+
+    public function reset($key)
+    {
+        $this->storage->unset($key);
     }
 
     private function _load($cb)
