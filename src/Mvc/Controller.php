@@ -2,7 +2,7 @@
 
 namespace Barbare\Framework\Mvc;
 
-use Barbare\Framework\Util\Storage;
+use Barbare\Framework\Util\Container;
 
 abstract class Controller
 {
@@ -12,43 +12,29 @@ abstract class Controller
     public function __construct(Application $application)
     {
         $this->application = $application;
-        $this->components = new Storage();
+        $this->components = new Container($this->application->getConfig()->read('components'));
+        $this->components->add('application', $application);
 
         $this->init();
     }
 
     public function get($attribut)
     {
-        $key = strtolower($attribut);
-        if ($component = $this->components->read($key)) {
-            return $component;
-        }
-        $config = $this->application->getConfig()->read('components')->read($key);
-        $args = [
-            'application' => $this->application,
-            'controller' => $this,
-        ];
-        if (is_callable($config)) {
-            $component = call_user_func_array($config, [$this->application, $this]);
-        } else {
-            if (is_object($config)) {
-                $component = $config;
-            } else {
-                $component = new $config($this->application, $this);
-            }
-        }
-        $this->components->write($key, $component);
-
-        return $component;
-    }
-
-    public function init()
-    {
+        return $this->components->get(strtolower($attribut));
     }
 
     public function redirect($url)
     {
         header('Location:'.$url);
         die;
+    }
+
+    public function init()
+    {
+    }
+
+    public function dispatch($controller, $action)
+    {
+        die('not implemented');
     }
 }

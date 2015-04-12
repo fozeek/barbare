@@ -19,6 +19,7 @@ class Application
         $this->config = new Storage($config);
         $this->eventManager = new EventManager();
         $this->serviceManager = new ServiceManager($this, $this->config->read('services'));
+        $this->serviceManager->set('application', $this);
         $this->moduleManager = new ModuleManager($this, $this->config->read('modules'));
         $this->eventManager
             ->attach('dispatch', [new Dispatcher($this), 'dispatch'])

@@ -2,7 +2,7 @@
 
 namespace Barbare\Framework\View;
 
-use Barbare\Framework\Util\Storage;
+use Barbare\Framework\Util\Container;
 
 class View
 {
@@ -17,37 +17,18 @@ class View
     protected $variables = [];
     protected $enableLayout = true;
 
-    public function __construct($application)
+    public function __construct($container)
     {
-        $this->application = $application;
+        $this->container = $container;
         $this->layout = new Layout($this);
-
-        $this->_loadHelpers();
-    }
-
-    protected function _loadHelpers()
-    {
-        $config = $this->application->getConfig()->read('helpers');
-        $this->helpers = new Storage();
-        foreach ($config as $key => $value) {
-            $helper = false;
-            if (is_string($value) && class_exists($value)) {
-                $helper = new $value($this->application, $this);
-            } elseif (is_callable($value)) {
-                $helper = $value($this->application, $this);
-            } else {
-                $helper = $value;
-            }
-            $this->helpers->write(
-                $key,
-                $helper
-            );
-        }
+        $this->helpers = new Container($container->get('application')->getConfig()->read('helpers'));
+        $this->helpers->add('view', $this);
+        $this->helpers->add('application', $container->get('application'));
     }
 
     public function getHelper($name)
     {
-        return $this->helpers->read($name);
+        return $this->helpers->get(strtolower($name));
     }
 
     public function __get($key)
@@ -61,11 +42,12 @@ class View
 
     public function __call($helper, $params)
     {
-        if (is_object($this->helpers->read($helper))) {
-            return call_user_func_array([$this->helpers->read($helper), '__invoke'], $params);
-        } else {
-            return call_user_func_array($this->helpers->read($helper), array_merge($params));
+        $cb = $this->helpers->get($helper);
+        if (is_object($cb)) {
+            return call_user_func_array([$cb, '__invoke'], $params);
         }
+
+        return call_user_func_array($cb, $params);
     }
 
     public function addHeader($header)

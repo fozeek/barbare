@@ -10,21 +10,21 @@ class Manager
     protected $repositories = [];
     protected $behaviors = [];
 
-    public function __construct($app)
+    public function __construct($container)
     {
         DbConnect::addUser('default', [
-            'host' => $app->getConfig()->read('db.host'),
-            'database' => $app->getConfig()->read('db.database'),
-            'user' => $app->getConfig()->read('db.user'),
-            'password' => $app->getConfig()->read('db.password'),
+            'host' => $container->get('application')->getConfig()->read('db.host'),
+            'database' => $container->get('application')->getConfig()->read('db.database'),
+            'user' => $container->get('application')->getConfig()->read('db.user'),
+            'password' => $container->get('application')->getConfig()->read('db.password'),
         ]);
 
         DbConnect::connect('default');
 
-        foreach ($app->getconfig()->read('orm.behaviors') as $name => $behavior) {
-            $this->behaviors[$name] = $behavior($app, $this);
+        foreach ($container->get('application')->getconfig()->read('orm.behaviors') as $name => $behavior) {
+            $this->behaviors[$name] = $behavior($container->get('application'), $this);
         }
-        foreach ($app->getConfig()->read('models') as $name => $repository) {
+        foreach ($container->get('application')->getConfig()->read('models') as $name => $repository) {
             if (is_string($repository)) {
                 $this->repositories[$name] = new $repository($name, $this);
             } else {

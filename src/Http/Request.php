@@ -9,12 +9,12 @@ use Barbare\Framework\Client\Client;
 class Request
 {
     protected $route;
-    protected $app;
+    protected $container;
     protected $client;
 
-    public function __construct($app)
+    public function __construct($container)
     {
-        $this->app = $app;
+        $this->container = $container;
         $this->client = new Client();
     }
 
@@ -48,7 +48,7 @@ class Request
 
     public function initDispatchEvent()
     {
-        $this->route = $this->app->getServiceManager()->get('router')->factory($this->getBaseUrl());
+        $this->route = $this->container->get('router')->factory($this->getBaseUrl());
 
         return new Event([
             'route' => $this->route,
