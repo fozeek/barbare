@@ -450,7 +450,7 @@ class QueryBuilder
         if ($this->type == self::$TYPE_INSERT || $this->type == self::$TYPE_UPDATE || $this->type == self::$TYPE_DELETE) {
             $requete = $this->getRequete();
             array_push(self::$_historique, $requete);
-            if (DbConnect::getConnection()->exec($requete)) {
+            if (DbConnect::getConnection()->exec($requete) !== false) {
                 if ($this->type == self::$TYPE_INSERT) {
                     return DbConnect::getConnection()->lastInsertId();
                 } else {
