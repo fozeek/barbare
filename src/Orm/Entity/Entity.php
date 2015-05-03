@@ -61,7 +61,11 @@ class Entity
         } elseif ($assoc['type'] == 'oneToMany') {
             return $foreignRepo->findBy($this->repository->getTableName().'_id', intval($this->get('id')));
         } elseif ($assoc['type'] == 'manyToOne') {
-            return $foreignRepo->findOneBy('id', intval($this->get($assoc['reference'].'_id')));
+            if($this->attributs[$assoc['reference'].'_id'] !== NULL) {
+                return $foreignRepo->findOneBy('id', intval($this->attributs[$assoc['reference'].'_id']));
+            } else {
+                return NULL;
+            }
         }
     }
 }
