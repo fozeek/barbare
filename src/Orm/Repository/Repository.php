@@ -120,6 +120,19 @@ class Repository
         return false;
     }
 
+    public function findBy($attribut, $value)
+    {
+        $entityClassName = $this->entityClassName;
+        if(is_string($value)) {
+            $value = "'".$value."'";
+        }
+        foreach (QueryBuilder::create()->from($this->tableName)->where($attribut, '=', $value)->fetchArray() as $values) {
+            $collection[] = new $entityClassName($this, $this->afterFind($values));
+        }
+
+        return new DbCollection($collection);
+    }
+
     public function findAll()
     {
         $collection = [];

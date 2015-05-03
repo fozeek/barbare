@@ -3,7 +3,7 @@
 namespace Barbare\Framework\Orm\Entity;
 
 use Barbare\Framework\Orm\QueryBuilder;
-use Barbare\Framework\Orm\Repository\DBCollection;
+use Barbare\Framework\Orm\Repository\DbCollection;
 
 class Entity
 {
@@ -31,20 +31,23 @@ class Entity
     private function _fetchAssoc($assoc)
     {
         $foreignRepo = $this->repository->getManager()->get($assoc['reference']);
-        $data = QueryBuilder::create()->from([$this->repository->getTableName().'_'.$assoc['reference'], $foreignRepo->getTableName()])
-            ->where($this->get('id'), '=', 'A.'.$this->repository->getTableName().'_id', false)
-            ->andWhere('A.'.$assoc['reference'].'_id', '=', 'B.id', false)
-            ->fetchArray();
-        foreach ($data as $key => $value) {
-            unset($data[$key][$this->repository->getTableName().'_id']);
-            unset($data[$key][$assoc['reference'].'_id']);
+        if($assoc['type'] == 'manyToMany') {
+            $data = QueryBuilder::create()->from([$this->repository->getTableName().'_'.$assoc['reference'], $foreignRepo->getTableName()])
+                ->where($this->get('id'), '=', 'A.'.$this->repository->getTableName().'_id', false)
+                ->andWhere('A.'.$assoc['reference'].'_id', '=', 'B.id', false)
+                ->fetchArray();
+            foreach ($data as $key => $value) {
+                unset($data[$key][$this->repository->getTableName().'_id']);
+                unset($data[$key][$assoc['reference'].'_id']);
+            }
+            $collection = [];
+            $entityClassName = $foreignRepo->getEntityClassName();
+            foreach ($data as $values) {
+                $collection[] = new $entityClassName($foreignRepo, $this->repository->afterFind($values));
+            }
+            return new DbCollection($collection);
+        } elseif ($assoc['type'] == 'oneToMany') {
+            return $foreignRepo->findBy($this->repository->getTableName().'_id', intval($this->get('id')));
         }
-        $collection = [];
-        $entityClassName = $foreignRepo->getEntityClassName();
-        foreach ($data as $values) {
-            $collection[] = new $entityClassName($foreignRepo, $this->repository->afterFind($values));
-        }
-
-        return new DBCollection($collection);
     }
 }

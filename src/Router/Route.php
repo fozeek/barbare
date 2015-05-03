@@ -61,6 +61,9 @@ class Route
 
     public function getParam($key)
     {
+        if(!isset($this->params[$key])) {
+            return false;
+        }
         return $this->params[$key];
     }
 }

@@ -16,6 +16,14 @@ class Layout
         $this->view = $view;
     }
 
+    public function getVariable($key)
+    {
+        if(!isset($this->variables[$key])) {
+            return false;
+        }
+        return $this->variables[$key];
+    }
+
     public function setTemplate($template)
     {
         $this->template = $template;
