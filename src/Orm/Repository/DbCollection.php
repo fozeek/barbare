@@ -24,6 +24,11 @@ class DbCollection implements Iterator
         return $this;
     }
 
+    public function count()
+    {
+        return count($this->data);
+    }
+
     public function filter($cb)
     {
         $res = [];

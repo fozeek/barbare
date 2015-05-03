@@ -33,6 +33,10 @@ class Request
             $data = $data[$key];
         }
 
+        if(isset($data['PHPSESSID'])) {
+            unset($data['PHPSESSID']);
+        }
+
         return $data;
     }
 
