@@ -28,6 +28,18 @@ class Entity
         return false;
     }
 
+    public function set($attribut, $value)
+    {
+        $this->attributs[$attribut] = $value;
+
+        return $this;
+    }
+
+    public function toArray()
+    {
+        return $this->attributs;
+    }
+
     private function _fetchAssoc($assoc)
     {
         $foreignRepo = $this->repository->getManager()->get($assoc['reference']);

@@ -144,8 +144,8 @@ class Repository
         return new DbCollection($collection);
     }
 
-    public function save($entity)
+    public function update($entity)
     {
-        return QueryBuilder::create()->update($this->tableName)->where('id', '=', $entity->id)->columnsValues($entity->toArray());
+        return QueryBuilder::create()->update($this->tableName)->where('id', '=', $entity->get('id'))->columnsValues($entity->toArray())->execute();
     }
 }

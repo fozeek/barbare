@@ -24,6 +24,11 @@ class DbCollection implements Iterator
         return $this;
     }
 
+    public function orderBy($attribut, $order)
+    {
+        die('TO DO =D');
+    }
+
     public function count()
     {
         return count($this->data);
