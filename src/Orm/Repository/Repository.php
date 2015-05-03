@@ -126,11 +126,21 @@ class Repository
         if(is_string($value)) {
             $value = "'".$value."'";
         }
+        $collection = [];
         foreach (QueryBuilder::create()->from($this->tableName)->where($attribut, '=', $value)->fetchArray() as $values) {
             $collection[] = new $entityClassName($this, $this->afterFind($values));
         }
 
         return new DbCollection($collection);
+    }
+
+    public function findOneBy($attribut, $value)
+    {
+        $result = $this->findBy($attribut, $value);
+        if($result->count()<1) {
+            return false;
+        }
+        return $result->get(0);
     }
 
     public function findAll()
