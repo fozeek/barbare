@@ -103,10 +103,8 @@ class Repository
 
     public function create($attributs)
     {
-        $res = QueryBuilder::create()->insert($this->tableName)->columnsValues($this->beforeSave($attributs))->execute();
-        $entityClassName = $this->getEntityClassName();
-
-        return new $entityClassName($this, $this->afterFind($attributs));
+        $id = QueryBuilder::create()->insert($this->tableName)->columnsValues($this->beforeSave($attributs))->execute();
+        return $this->findById($id);
     }
 
     public function findById($id)

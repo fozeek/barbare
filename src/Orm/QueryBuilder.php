@@ -399,6 +399,9 @@ class QueryBuilder
                 if ($cpt != 0) {
                     $requete .= ", ";
                 }
+                if($this->values[$cpt] === NULL) {
+                    $this->values[$cpt] = 'NULL';
+                }
                 $requete .= $value." = ".$cote.addslashes($this->values[$cpt]).$cote;
                 $requete .= "";
                 $cpt++;
