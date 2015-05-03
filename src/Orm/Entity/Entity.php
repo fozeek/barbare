@@ -22,7 +22,7 @@ class Entity
         if (isset($this->attributs[$attribut])) {
             return $this->attributs[$attribut];
         } elseif ($this->associations[$attribut]) {
-            return $this->_fetchAssoc($this->associations[$attribut]);
+            return $this->attributs[$attribut] = $this->_fetchAssoc($this->associations[$attribut]);
         }
 
         return false;
