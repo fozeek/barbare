@@ -24,6 +24,28 @@ class DbCollection implements Iterator
         return $this;
     }
 
+    public function order($cb)
+    {
+        $tab_en_ordre = false;
+        $taille = count($this->data);
+        while(!$tab_en_ordre)
+        {
+            $tab_en_ordre = true;
+            for($i=0 ; $i < $taille-1 ; $i++)
+            {
+                if(!$cb($this->data[$i], $this->data[$i+1]))
+                {
+                    $tmp = $this->data[$i];
+                    $this->data[$i] = $this->data[$i+1];
+                    $this->data[$i+1] = $tmp;
+                    $tab_en_ordre = false;
+                }
+            }
+            $taille--;
+        }
+        return $this;
+    }
+
     public function orderBy($attribut, $order)
     {
         die('TO DO =D');
