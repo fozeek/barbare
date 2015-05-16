@@ -8,6 +8,7 @@ class Attribut
 {
     public $name;
     public $autoIncrement = false;
+    public $primaryKey = false;
     public $type = 'text';
     public $unique = false;
     public $typeOptions = "";
@@ -58,6 +59,11 @@ class Attribut
     public function unique()
     {
         $this->unique = true;
+    }
+
+    public function primaryKey()
+    {
+        $this->primaryKey = true;
     }
 
     public function index()

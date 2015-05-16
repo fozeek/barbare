@@ -32,13 +32,21 @@ class Table
         $indexes = [];
         $autoIncrements = [];
         $attributs = [];
+        $uniques = [];
         foreach ($this->attributs as $attribut) {
             $attributs[] = $attribut->getSql();
-            if($attribut->index || $attribut->autoIncrement) {
+            if($attribut->index) {
                 $indexes[] = $attribut;
+            }
+            if($attribut->primaryKey) {
+                $primaries[] = $attribut;
             }
             if($attribut->autoIncrement) {
                 $autoIncrements[] = $attribut;
+                $primaries[] = $attribut;
+            }
+            if($attribut->unique) {
+                $uniques[] = $attribut;
             }
 
         }
@@ -46,18 +54,28 @@ class Table
         $sql .= PHP_EOL.") ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;".PHP_EOL;
 
         //indexes
-        if(count($indexes)>0) {
-            $sql .= PHP_EOL."ALTER TABLE `".$this->name."`".PHP_EOL;
-        }
         $modifiers = [];
-        foreach ($indexes as $attribut) {
+        foreach ($primaries as $attribut) {
             $modifiers[] = "ADD PRIMARY KEY (`".$attribut->name."`)";
+        }
+        foreach ($indexes as $attribut) {
+            $modifiers[] = "ADD INDEX (`".$attribut->name."`)";
+        }
+        foreach ($uniques as $attribut) {
+            $modifiers[] = "ADD UNIQUE (`".$attribut->name."`)";
         }
         foreach ($autoIncrements as $attribut) {
             $modifiers[] = "MODIFY ".$attribut->getSql()." AUTO_INCREMENT";
         }
-        $sql .= implode(','.PHP_EOL, $modifiers) . ";";
+        if(count($modifiers)>0) {
+            $sql .= PHP_EOL."ALTER TABLE `".$this->name."`".PHP_EOL.implode(','.PHP_EOL, $modifiers) . ";";;
+        }
 
         return $sql;
     }
 }
+
+
+/*
+ADD UNIQUE(`slug`);
+*/  
