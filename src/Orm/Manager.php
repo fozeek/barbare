@@ -50,7 +50,7 @@ class Manager
 
     public function importShema($cb)
     {
-        $schema = new Schema;
+        $schema = new Schema($this->container->get('application')->getConfig()->read('db.database'));
         $cb($schema);
         return $schema;
     }

@@ -2,10 +2,12 @@
 
 namespace Barbare\Framework\Orm\Schema;
 
-use Barbare\Framework\Orm\Schema\Attribut;
+use Barbare\Framework\Orm\Schema\Mapping;
+use Barbare\Framework\Orm\Sql;
 
 class Attribut
 {
+    public $onUpdate = true;
     public $name;
     public $autoIncrement = false;
     public $primaryKey = false;
@@ -15,34 +17,17 @@ class Attribut
     public $events = [];
     public $nullable = false;
     public $index = false;
+    public $mapping = false;
+    public $default = false;
 
     public function __construct($name)
     {
         $this->name = $name;
     }
 
-    public function getSql()
+    public function getSql($ai = false)
     {
-        return "`".$this->name."` ".$this->sqlType()." ".$this->sqlNull();
-    }
-
-    private function sqlType()
-    {
-        $return = $this->type;
-        if(!empty($this->typeOptions)) {
-            $return .= "(".$this->typeOptions.")";
-        }
-        return $return;
-    }
-
-    private function sqlNull()
-    {
-        return !$this->nullable ? "NOT NULL": "";
-    }
-
-    private function sqlAutoIncrement()
-    {
-        return $this->autoIncrement ? "AUTO_INCREMENT": "";
+        return Sql::attribut($this, $ai);
     }
 
     public function type($type, $options = "")
@@ -51,9 +36,30 @@ class Attribut
         $this->typeOptions = $options;
     }
 
+    public function mapping($type, $cb)
+    {
+        if($type = "manyToMany") {
+            $this->onUpdate = false;
+        }
+        $this->type = 'int';
+        $this->typeOptions = '11';
+        $this->mapping = new Mapping($type);
+        $cb($this->mapping);
+    }
+
     public function on($event, $cb)
     {
         $this->events[$event] = $cb;
+    }
+
+    public function defaultValue($default)
+    {
+        $this->default = $default;
+    }
+
+    public function null()
+    {
+        $this->nullable = true;
     }
 
     public function unique()
