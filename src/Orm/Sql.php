@@ -22,7 +22,6 @@ class Sql
             }
             if($attribut->autoIncrement) {
                 $autoIncrements[] = $attribut;
-                $primaries[] = $attribut;
             }
             if($attribut->unique) {
                 $uniques[] = $attribut;
@@ -32,23 +31,23 @@ class Sql
         $string .= '    '.implode(','.PHP_EOL.'    ', $attributs);
         $string .= PHP_EOL.") ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;".PHP_EOL;
 
-        //indexes
-        $modifiers = [];
-        foreach ($primaries as $attribut) {
-            $modifiers[] = "ADD PRIMARY KEY (`".$attribut->name."`)";
-        }
-        foreach ($indexes as $attribut) {
-            $modifiers[] = "ADD INDEX (`".$attribut->name."`)";
-        }
-        foreach ($uniques as $attribut) {
-            $modifiers[] = "ADD UNIQUE (`".$attribut->name."`)";
-        }
-        foreach ($autoIncrements as $attribut) {
-            $modifiers[] = "MODIFY ".$attribut->getSql(true);
-        }
-        if(count($modifiers)>0) {
-            $string .= PHP_EOL."ALTER TABLE `".$table->name."`".PHP_EOL.implode(','.PHP_EOL, $modifiers) . ";";;
-        }
+        //indexes   =>  L'Updator gere lui meme les indexes
+        // $modifiers = [];
+        // foreach ($primaries as $attribut) {
+        //     $modifiers[] = "ADD PRIMARY KEY (`".$attribut->name."`)";
+        // }
+        // foreach ($indexes as $attribut) {
+        //     $modifiers[] = "ADD INDEX (`".$attribut->name."`)";
+        // }
+        // foreach ($uniques as $attribut) {
+        //     $modifiers[] = "ADD UNIQUE (`".$attribut->name."`)";
+        // }
+        // foreach ($autoIncrements as $attribut) {
+        //     $modifiers[] = "MODIFY ".$attribut->getSql(true);
+        // }
+        // if(count($modifiers)>0) {
+        //     $string .= PHP_EOL."ALTER TABLE `".$table->name."`".PHP_EOL.implode(','.PHP_EOL, $modifiers) . ";";;
+        // }
 
         return $string;
     }
