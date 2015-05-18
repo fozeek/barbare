@@ -7,6 +7,9 @@ use Barbare\Framework\Orm\Sql;
 
 class Attribut
 {
+    public $table;
+
+    public $onModel;
     public $onUpdate = true;
     public $name;
     public $autoIncrement = false;
@@ -20,8 +23,10 @@ class Attribut
     public $mapping = false;
     public $default = false;
 
-    public function __construct($name)
+    public function __construct($table, $name, $onModel = true)
     {
+        $this->onModel = $onModel;
+        $this->table = $table;
         $this->name = $name;
     }
 
@@ -38,12 +43,12 @@ class Attribut
 
     public function mapping($type, $cb)
     {
-        if($type = "manyToMany") {
+        if($type == "manyToMany") {
             $this->onUpdate = false;
         }
         $this->type = 'int';
         $this->typeOptions = '11';
-        $this->mapping = new Mapping($type);
+        $this->mapping = new Mapping($this, $type);
         $cb($this->mapping);
     }
 

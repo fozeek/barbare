@@ -13,20 +13,21 @@ class Sql
         $uniques = [];
         $primaries = [];
         foreach ($table->attributs as $attribut) {
-            $attributs[] = $attribut->getSql();
-            if($attribut->index) {
-                $indexes[] = $attribut;
+            if(!$attribut->onModel) {
+                $attributs[] = $attribut->getSql();
+                if($attribut->index) {
+                    $indexes[] = $attribut;
+                }
+                if($attribut->primaryKey) {
+                    $primaries[] = $attribut;
+                }
+                if($attribut->autoIncrement) {
+                    $autoIncrements[] = $attribut;
+                }
+                if($attribut->unique) {
+                    $uniques[] = $attribut;
+                }
             }
-            if($attribut->primaryKey) {
-                $primaries[] = $attribut;
-            }
-            if($attribut->autoIncrement) {
-                $autoIncrements[] = $attribut;
-            }
-            if($attribut->unique) {
-                $uniques[] = $attribut;
-            }
-
         }
         $string .= '    '.implode(','.PHP_EOL.'    ', $attributs);
         $string .= PHP_EOL.") ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;".PHP_EOL;

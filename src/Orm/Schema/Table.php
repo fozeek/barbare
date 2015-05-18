@@ -8,17 +8,19 @@ use Barbare\Framework\Orm\Sql;
 class Table
 {
     public $name;
+    public $onModel;
     public $attributs = [];
     public $timestamps = false;
 
-    public function __construct($name)
+    public function __construct($name, $onModel = true)
     {
+        $this->onModel = $onModel;
         $this->name = $name;
     }
 
-    public function attribut($name, $cb)
+    public function attribut($name, $cb, $onModel = true)
     {
-        $this->attributs[$name] = new Attribut($name);
+        $this->attributs[$name] = new Attribut($this, $name, $onModel);
         $cb($this->attributs[$name]);
     }
 
@@ -30,6 +32,18 @@ class Table
     public function getSql()
     {
         return Sql::table($this);
+    }
+
+    public function get($attribut)
+    {
+        return $this->attributs[$attribut];
+    }
+
+    public function mapping($attributName, $type, $cb)
+    {
+        $this->attribut($attributName, function($attribut) use ($type, $cb) {
+            $attribut->mapping($type, $cb);
+        });
     }
 }
 
