@@ -23,32 +23,9 @@ class Schema
         $cb($this->tables[$name]);
     }
 
-    public function getSql()
+    private function load()
     {
-        $sql = "";
-        foreach ($this->tables as $name => $table) {
-            $sql .= $table->getSql().PHP_EOL.PHP_EOL;
-        }
-        return $sql;
-    }
-
-    public function getCurrentSchema()
-    {
-
-        // Indexs
-        $constraints = DbConnect::getConnection()->query("SELECT * FROM `information_schema`.`KEY_COLUMN_USAGE` WHERE `CONSTRAINT_SCHEMA` LIKE '".$this->db."' AND `POSITION_IN_UNIQUE_CONSTRAINT` = 1 ORDER BY TABLE_NAME")->fetchAll(PDO::FETCH_ASSOC);
-        // $constraints = [];
-        // foreach ($data as $value) {
-        //     unset($value['TABLE_CATALOG']);
-        //     unset($value['TABLE_SCHEMA']);
-        //     if(!isset($constraints[$value['TABLE_NAME']])) {
-        //         $constraints[$value['TABLE_NAME']] = [];
-        //     }
-        //     $constraints[$value['TABLE_NAME']][$value['COLUMN_NAME']] = $value;
-        // }
-
         $instanciatedConstraints = [];
-        $tables = [];
         foreach ($this->tables as $table) {
             foreach ($table->attributs as $attribut) {
                 if($attribut->mapping) {
@@ -105,6 +82,58 @@ class Schema
                 }
             }
         }
+        return $instanciatedConstraints;
+    }
+
+    public function getSql()
+    {
+        $sql = "";
+        foreach ($this->tables as $name => $table) {
+            $sql .= $table->getSql().PHP_EOL.PHP_EOL;
+        }
+        return $sql;
+    }
+
+    public function tree()
+    {
+        $this->load();
+        $string = "";
+        foreach ($this->tables as $table) {
+            $string .= "\033[1;32m".$table->name."\033[0m".PHP_EOL;
+            $count = 0;
+            foreach ($table->attributs as $attribut) { 
+                if(!$attribut->mapping) {
+                    $count++;
+                }
+            }
+            $cpt = 0;
+            foreach ($table->attributs as $attribut) { 
+                if(!$attribut->mapping) {
+                    $bf = $cpt == $count-1 ? "└── ":"├── ";
+            
+                    $options = [];
+                    if($attribut->autoIncrement) {
+                        $options[] = "AUTO_INCREMENT";
+                    }
+                    if($attribut->primaryKey) {
+                        $options[] = "PRIMARY KEY";
+                    } elseif($attribut->unique) {
+                        $options[] = "UNIQUE";
+                    } elseif($attribut->index) {
+                        $options[] = "INDEX";
+                    }
+
+                    $string .= $bf."\033[1;35m".$attribut->name."\033[0;37m ".$attribut->type."(".$attribut->typeOptions.") ".implode(" ", $options)."\033[0m".PHP_EOL;
+                    $cpt++;
+                }
+            }
+        }
+        return $string;
+    }
+
+    public function update()
+    {
+        $instanciatedConstraints = $this->load();
 
 
         $data = DbConnect::getConnection()->query("SELECT * FROM `information_schema`.`COLUMNS` WHERE TABLE_SCHEMA = '".$this->db."' ORDER BY TABLE_NAME")->fetchAll(PDO::FETCH_ASSOC);
@@ -198,6 +227,8 @@ class Schema
 
 
         // On créer toutes les contraintes (tables de jointure créee)
+        $constraints = DbConnect::getConnection()->query("SELECT * FROM `information_schema`.`KEY_COLUMN_USAGE` WHERE `CONSTRAINT_SCHEMA` LIKE '".$this->db."' AND `POSITION_IN_UNIQUE_CONSTRAINT` = 1 ORDER BY TABLE_NAME")->fetchAll(PDO::FETCH_ASSOC);
+
         // on check les doublons
         for ($cpt1=0; $cpt1 < count($instanciatedConstraints); $cpt1++) { 
             for ($cpt2=$cpt1+1; $cpt2 < count($instanciatedConstraints); $cpt2++) { 
