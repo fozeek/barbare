@@ -106,43 +106,41 @@ class Schema
         $string = "";
         foreach ($this->tables as $table) {
             if(!$model || ($model && $table->onModel)) {
-                $tableName = !$model ? $table->name : ucfirst($table->name);
-                $string .= "\033[1;32m".$tableName."\033[0m".PHP_EOL;
-                $count = 0;
+                $string .= "\033[1;32m".(!$model ? $table->name : ucfirst($table->name))."\033[0m";
+                if($table->join && $model) {
+                    $string .= " extends \033[1;32m".ucfirst($table->join)."\033[0m";
+                }
+                $string .= PHP_EOL;
+                $attributs = [];
                 foreach ($table->attributs as $attribut) { 
-                    if(!$model || ($model && $attribut->onModel)) {
-                        if(($attribut->mapping && $model) || (!$attribut->mapping)) {
-                            $count++;
+                    if(
+                        (!$model || ($model && $attribut->onModel))
+                        && (($attribut->mapping && $model) || (!$attribut->mapping))
+                    ) {
+                        $options = [];
+                        if($attribut->autoIncrement) {
+                            $options[] = "AUTO_INCREMENT";
                         }
+                        if($attribut->primaryKey) {
+                            $options[] = "PRIMARY KEY";
+                        } elseif($attribut->unique) {
+                            $options[] = "UNIQUE";
+                        } elseif($attribut->index) {
+                            $options[] = "INDEX";
+                        }
+                        $attributString = "├── \033[1;35m".str_pad($attribut->name, 15)."\033[0m";
+                        if(!$model) {
+                            $attributString .= "\033[0;37m ".$attribut->type."(".$attribut->typeOptions.") ".implode(" ", $options)."\033[0m";
+                        }
+                        $attributs[] = $attributString;
                     }
                 }
-                $cpt = 0;
-                foreach ($table->attributs as $attribut) { 
-                    if(!$model || ($model && $attribut->onModel)) {
-                        if(($attribut->mapping && $model) || (!$attribut->mapping)) {
-                            $bf = $cpt == $count-1 ? "└── ":"├── ";
-                    
-                            $options = [];
-                            if($attribut->autoIncrement) {
-                                $options[] = "AUTO_INCREMENT";
-                            }
-                            if($attribut->primaryKey) {
-                                $options[] = "PRIMARY KEY";
-                            } elseif($attribut->unique) {
-                                $options[] = "UNIQUE";
-                            } elseif($attribut->index) {
-                                $options[] = "INDEX";
-                            }
-
-                            $string .= $bf."\033[1;35m".str_pad($attribut->name, 15)."\033[0m";
-                            if(!$model) {
-                                $string .= "\033[0;37m ".$attribut->type."(".$attribut->typeOptions.") ".implode(" ", $options)."\033[0m";
-                            }
-                            $string .= PHP_EOL;
-                            $cpt++;
-                        }
-                    }
+                if(count($attributs) > 0) {
+                    end($attributs);
+                    $attributs[key($attributs)] = "└── ".substr($attributs[key($attributs)], 10);
+                    $string .= implode(PHP_EOL, $attributs);
                 }
+                $string .= PHP_EOL;
             }
         }
         return $string;
@@ -170,9 +168,9 @@ class Schema
             if(array_key_exists($table->name, $schema)) {
                 // On cherche les ≠ entre les attributs
                 foreach ($table->attributs as $attribut) {
-                    if($attribut->onUpdate && !$attribut->mapping) {
+                    if(!$attribut->mapping) {
                         if(array_key_exists($attribut->name, $schema[$table->name])) {
-                            $sql .= "ALTER TABLE `".$table->name."` CHANGE `".$attribut->name."` " .Sql::attribut($attribut, true).";".PHP_EOL; 
+                            $sql .= "ALTER TABLE `".$table->name."` CHANGE `".$attribut->name."` " .Sql::attribut($attribut).";".PHP_EOL; 
                             if($attribut->primaryKey && $schema[$table->name][$attribut->name]['EXTRA'] != "auto_increment") { // Il faut ajouter l'index Primary key pour definir le champs en AUTO_INCREMENT
                                 $sql .= "ALTER TABLE `".$table->name."` ADD PRIMARY KEY(`".$attribut->name."`);".PHP_EOL;
                                 $sql .= "ALTER TABLE `".$table->name."` CHANGE `".$attribut->name."` " .Sql::attribut($attribut, true).";".PHP_EOL;
@@ -191,7 +189,15 @@ class Schema
                     $sql .= "ALTER TABLE `".$table->name."` DROP `".$attr['COLUMN_NAME']."`;".PHP_EOL;
                 }
             } else {
-                $sql .= Sql::table($table);
+                $count = 0;
+                foreach ($table->attributs as $attr) {
+                    if(!$attr->mapping) {
+                        $count++;
+                    }
+                }
+                if($count > 0) {
+                    $sql .= Sql::table($table);
+                }
             }
         }
 

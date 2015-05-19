@@ -10,7 +10,6 @@ class Attribut
     public $table;
 
     public $onModel;
-    public $onUpdate = true;
     public $name;
     public $autoIncrement = false;
     public $primaryKey = false;
@@ -43,9 +42,6 @@ class Attribut
 
     public function mapping($type, $cb)
     {
-        if($type == "manyToMany") {
-            $this->onUpdate = false;
-        }
         $this->type = 'int';
         $this->typeOptions = '11';
         $this->mapping = new Mapping($this, $type);
@@ -85,5 +81,8 @@ class Attribut
     public function autoIncrement()
     {
         $this->autoIncrement = true;
+        $this->type = 'int';
+        $this->typeOptions = 11;
+        $this->primaryKey = true;
     }
 }

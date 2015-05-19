@@ -7,26 +7,26 @@ class Sql
     static public function table($table)
     {
         $string = "CREATE TABLE `".$table->name."` (".PHP_EOL;
-        $indexes = [];
-        $autoIncrements = [];
+        // $indexes = [];
+        // $autoIncrements = [];
         $attributs = [];
-        $uniques = [];
-        $primaries = [];
+        // $uniques = [];
+        // $primaries = [];
         foreach ($table->attributs as $attribut) {
-            if(!$attribut->onModel) {
+            if(!$attribut->mapping) {
                 $attributs[] = $attribut->getSql();
-                if($attribut->index) {
-                    $indexes[] = $attribut;
-                }
-                if($attribut->primaryKey) {
-                    $primaries[] = $attribut;
-                }
-                if($attribut->autoIncrement) {
-                    $autoIncrements[] = $attribut;
-                }
-                if($attribut->unique) {
-                    $uniques[] = $attribut;
-                }
+                // if($attribut->index) {
+                //     $indexes[] = $attribut;
+                // }
+                // if($attribut->primaryKey) {
+                //     $primaries[] = $attribut;
+                // }
+                // if($attribut->autoIncrement) {
+                //     $autoIncrements[] = $attribut;
+                // }
+                // if($attribut->unique) {
+                //     $uniques[] = $attribut;
+                // }
             }
         }
         $string .= '    '.implode(','.PHP_EOL.'    ', $attributs);

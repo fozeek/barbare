@@ -9,6 +9,7 @@ class Table
 {
     public $name;
     public $onModel;
+    public $join = false;
     public $attributs = [];
     public $timestamps = false;
 
@@ -22,6 +23,11 @@ class Table
     {
         $this->attributs[$name] = new Attribut($this, $name, $onModel);
         $cb($this->attributs[$name]);
+    }
+
+    public function join($table)
+    {
+        $this->join = $table;
     }
 
     public function timestamps()
