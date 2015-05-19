@@ -2,7 +2,7 @@
 
 namespace Barbare\Framework\Orm;
 
-use Barbare\Framework\Orm\Repository\Repository;
+use Barbare\Framework\Orm\Repository;
 use Barbare\Framework\Orm\Schema\Schema;
 
 class Manager
@@ -11,10 +11,12 @@ class Manager
     protected $repositories = [];
     protected $behaviors = [];
     protected $container;
+    protected $schema;
 
     public function __construct($container)
     {
         $this->container = $container;
+        $this->schema = $this->importSchema($container->get('application')->getConfig()->read('schema'));
 
         DbConnect::addUser('default', [
             'host' => $container->get('application')->getConfig()->read('db.host'),
@@ -24,10 +26,6 @@ class Manager
         ]);
 
         DbConnect::connect('default');
-
-        // foreach ($container->get('application')->getconfig()->read('orm.behaviors') as $name => $behavior) {
-        //     $this->behaviors[$name] = $behavior($container->get('application'), $this);
-        // }
     }
 
     public function getBehavior($name)
@@ -35,20 +33,24 @@ class Manager
         return $this->behaviors[$name];
     }
 
+    public function getSchema()
+    {
+        return $this->schema;
+    }
+
     public function get($name)
     {
         if(!isset($this->repositories[$name])) {
-            $repository = $this->container->get('application')->getConfig()->read('models.'.$name);
-            if (is_string($repository)) {
-                $this->repositories[$name] = new $repository($name, $this);
+            if($schema = $this->schema->get($name)) {
+                $this->repositories[$name] = new Repository($this, $schema);
             } else {
-                $this->repositories[$name] = $repository(new Repository($name, $this));
+                return false;
             }
         }
         return $this->repositories[$name];
     }
 
-    public function importShema($cb)
+    public function importSchema($cb)
     {
         $schema = new Schema($this->container->get('application')->getConfig()->read('db.database'));
         $cb($schema);

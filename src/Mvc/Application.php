@@ -50,4 +50,9 @@ class Application
     {
         return $this->services->get($service);
     }
+
+    public function addService($name, $service)
+    {
+        return $this->services->add($name, $service);
+    }
 }

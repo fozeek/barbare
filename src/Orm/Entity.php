@@ -9,18 +9,20 @@ class Entity
 {
     private $repository;
     private $schema;
+    private $attributs = [];
 
-    public function __construct($repository)
+    public function __construct($repository, $attributs)
     {
         $this->repository = $repository;
         $this->schema = $repository->getSchema();
+        $this->attributs = $attributs;
     }
 
     public function get($attribut)
     {
         if (isset($this->attributs[$attribut])) {
             return $this->attributs[$attribut];
-        } elseif ($this->schema->attributs->get($attribut)->mapping) {
+        } elseif ($this->schema->get($attribut)->mapping) {
             return $this->attributs[$attribut] = $this->_build($attribut);
         }
 

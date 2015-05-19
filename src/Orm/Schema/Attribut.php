@@ -82,6 +82,7 @@ class Attribut
     {
         $this->autoIncrement = true;
         $this->type = 'int';
+        $this->unique = true;
         $this->typeOptions = 11;
         $this->primaryKey = true;
     }

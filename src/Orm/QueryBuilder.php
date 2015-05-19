@@ -49,6 +49,7 @@ class QueryBuilder
     private $orderby;
     private $limit;
     private $group;
+    private $join = false;
     public static $_historique = array();
 
     public static function create()
@@ -117,6 +118,11 @@ class QueryBuilder
         }
 
         return $this;
+    }
+
+    public function join($type, $table, $on)
+    {
+        $this->join = ['type' => $type, 'table' => $table, 'on' => $on];
     }
 
     /*
@@ -329,6 +335,10 @@ class QueryBuilder
                 $requete .= " ".chr($cpt + 64)."";
                 $requete .= $this->getWhereString();
             }
+        }
+
+        if (!empty($this->join)) {
+            $requete .= " ".$this->join['type']." JOIN ".$this->join['table']. " ON " .$this->join['on'];
         }
 
         if (!empty($this->group)) {

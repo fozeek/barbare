@@ -16,9 +16,10 @@ class Dispatcher
     public function dispatch(Event $event)
     {
         $controllerName = $event->getData()->read('route')->getController();
-
+        $controller = new $controllerName($this->app);
+        $this->app->addService('controller', $controller);
         return call_user_func_array([
-            new $controllerName($this->app),
+            $controller,
             $event->getData()->read('route')->getAction(),
         ], $event->getData()->read('route')->getParams());
     }
