@@ -10,6 +10,7 @@ use PDO;
 class Schema
 {
     private $tables = [];
+    private $behaviors = [];
     private $db;
     private $build = false;
     private $instanciatedConstraints = [];
@@ -21,8 +22,21 @@ class Schema
 
     public function table($name, $cb, $onModel = true)
     {
-        $this->tables[$name] = new Table($name, $onModel);
+        $this->tables[$name] = new Table($this, $name, $onModel);
         $cb($this->tables[$name]);
+    }
+
+    public function behavior($name, $cb)
+    {
+        $this->behaviors[$name] = $cb;
+    }
+
+    public function getBehavior($name)
+    {
+        if(!isset($this->behaviors[$name])) {
+            return false;
+        }
+        return $this->behaviors[$name];
     }
 
     public function get($table)

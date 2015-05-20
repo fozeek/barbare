@@ -7,22 +7,40 @@ use Barbare\Framework\Orm\Sql;
 
 class Table
 {
+    public $schema;
     public $name;
     public $onModel;
     public $join = false;
     public $attributs = [];
     public $timestamps = false;
 
-    public function __construct($name, $onModel = true)
+    public function __construct($schema, $name, $onModel = true)
     {
         $this->onModel = $onModel;
         $this->name = $name;
+        $this->schema = $schema;
     }
 
     public function attribut($name, $cb, $onModel = true)
     {
         $this->attributs[$name] = new Attribut($this, $name, $onModel);
         $cb($this->attributs[$name]);
+        return $this;
+    }
+
+    public function attributs($attributs, $onModel = true)
+    {
+        foreach ($attributs as $name => $cb) {
+            $this->attribut($name, $cb, $onModel);
+        }
+        return $this;
+    }
+
+    public function behavior($name)
+    {
+        $cb = $this->schema->getBehavior($name);
+        $cb($this);
+        return $this;
     }
 
     public function join($table)

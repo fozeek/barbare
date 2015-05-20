@@ -5,7 +5,7 @@ namespace Barbare\Framework\Orm;
 use Barbare\Framework\Orm\Repository;
 use Barbare\Framework\Orm\Schema\Schema;
 
-class Manager
+class MManager
 {
     protected $models = [];
     protected $repositories = [];
