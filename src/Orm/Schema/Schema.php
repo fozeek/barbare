@@ -153,7 +153,11 @@ class Schema
                         } elseif($attribut->index) {
                             $options[] = "INDEX";
                         }
-                        $attributString = "├── \033[1;35m".str_pad($attribut->name, 15)."\033[0m";
+                        $needed = "\033[0m*";
+                        if($attribut->nullable || $attribut->mapping) {
+                            $needed = "";
+                        }
+                        $attributString = "├── \033[1;35m".str_pad($attribut->name.$needed, 20)."\033[0m";
                         if(!$model) {
                             $attributString .= "\033[0;37m ".$attribut->type."(".$attribut->typeOptions.") ".implode(" ", $options)."\033[0m";
                         } else {
