@@ -156,6 +156,14 @@ class Schema
                         $attributString = "├── \033[1;35m".str_pad($attribut->name, 15)."\033[0m";
                         if(!$model) {
                             $attributString .= "\033[0;37m ".$attribut->type."(".$attribut->typeOptions.") ".implode(" ", $options)."\033[0m";
+                        } else {
+                            if($attribut->mapping) {
+                                $attributString .= "\033[0;37m ".ucfirst($attribut->mapping->table);
+                                if($attribut->mapping->type == 'oneToMany' || $attribut->mapping->type == 'manyToMany') {
+                                    $attributString .= "[]";
+                                }
+                                $attributString .= "\033[0m";
+                            }
                         }
                         $attributs[] = $attributString;
                     }
