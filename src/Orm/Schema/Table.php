@@ -9,10 +9,10 @@ class Table
 {
     public $schema;
     public $name;
-    public $onModel;
     public $join = false;
+    public $onModel;
+    public $ephemeral = false;
     public $attributs = [];
-    public $timestamps = false;
 
     public function __construct($schema, $name, $onModel = true)
     {
@@ -28,6 +28,33 @@ class Table
         return $this;
     }
 
+    public function union($tables, $attributs)
+    {
+        $this->ephemeral = true;
+        $this->union = $tables;
+        foreach ($attributs as $attribut) {
+            $this->attribut($attribut, function(){});
+        }
+        return $this;
+    }
+
+    public function join($table)
+    {
+        $this->join = $table;
+        $this->schema->get($table)->attribut('_join_table_name', function($attribut) {
+            $attribut->type('varchar', 250);
+            $attribut->null();
+        }, false);
+        $this->attribut('id', function($attribut) {
+            $attribut->type('int', 11);
+            $attribut->unique();
+        });
+        // $this->schema->get($table)->attribut('_join_table_id', function($attribut) {
+        //     $attribut->type('int', 11);
+        //     $attribut->null();
+        // }, false);
+    }
+
     public function attributs($attributs, $onModel = true)
     {
         foreach ($attributs as $name => $cb) {
@@ -41,16 +68,6 @@ class Table
         $cb = $this->schema->getBehavior($name);
         $cb($this);
         return $this;
-    }
-
-    public function join($table)
-    {
-        $this->join = $table;
-    }
-
-    public function timestamps()
-    {
-        $this->timestamps = true;
     }
 
     public function getSql()
