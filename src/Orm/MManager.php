@@ -16,7 +16,7 @@ class MManager
     public function __construct($container)
     {
         $this->container = $container;
-        $this->schema = $this->importSchema($container->get('application')->getConfig()->read('schema'));
+        $this->schema = $this->importSchema($container->get('application')->getConfig()->read('db.schema'));
 
         DbConnect::addUser('default', [
             'host' => $container->get('application')->getConfig()->read('db.host'),

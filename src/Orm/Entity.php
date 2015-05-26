@@ -29,13 +29,30 @@ class Entity
         return false;
     }
 
+    public function getInheritance() {
+        return $this->get('_join_table_name');
+    }
+
     private function _build($attribut)
     {
-        $shemAttribut = $this->schema->attributs->get($attribut);
-        if(!$shemAttribut->mapping) {
-            return false;
+        $schemAttribut = $this->schema->attributs->get($attribut);
+        $foreignRepo = $this->repository->getManager()->get($schemAttribut->mapping->table);
+        if($assoc['type'] == 'manyToMany') {
+            return $foreignRepo->findAllCallback(function($qb) {
+                $qb->from($this->schema->name.'_'.$foreignRepo->name)
+                    ->where($schemAttribut->mapping->associatedKey, '=', $schemAttribut->mapping->foreignKey);
+            });
+        } elseif ($assoc['type'] == 'oneToMany') {
+            return $foreignRepo->findAllBy([$schemAttribut->mapping->foreignKey => intval($this->get('id'))]);
+        } elseif ($assoc['type'] == 'manyToOne') {
+            return $foreignRepo->findOneBy('id', intval($this->attributs[$schemAttribut->mapping->associatedKey]));
+        } elseif ($assoc['type'] == 'oneToOne') {
+            if($schemAttribut->mapping->containDependancy) {
+                return $foreignRepo->findOneBy([$schemAttribut->mapping->table.'.id' => intval($this->attributs[$schemAttribut->mapping->associatedKey])]);
+            } else {
+                return $foreignRepo->findOneBy([$schemAttribut->mapping->foreignKey => $schemAttribut->mapping->table.'.id']);
+            }
         }
-
     }
 
     public function set($attribut, $value)

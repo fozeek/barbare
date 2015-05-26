@@ -4,7 +4,7 @@ namespace Barbare\Framework\Mvc;
 
 use Barbare\Framework\Util\Container;
 
-abstract class Controller
+class Controller
 {
     protected $components;
     protected $application;
@@ -33,8 +33,8 @@ abstract class Controller
     {
     }
 
-    public function dispatch($controller, $action)
+    public function dispatch($route, $params = [])
     {
-        die('not implemented');
+        call_user_func_array([new Dispatcher($this->application), 'call'], $params);
     }
 }

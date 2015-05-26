@@ -203,6 +203,7 @@ class QueryBuilder
         } elseif ($condition == null) {
             $this->where[] = $attribut;
         } else {
+            $type = count($this->where)>0 ? "andwhere" : "where";
             $this->where[] = array("where", $attribut, $condition, $param, $typeVar);
         }
 
@@ -317,6 +318,11 @@ class QueryBuilder
         }
         $requete .= " ".chr($cpt + 64)."";
 
+        // JOIN
+        if (!empty($this->join)) {
+            $requete .= " ".$this->join['type']." JOIN ".$this->join['table']. " ON " .$this->join['on'];
+        }
+
         // WHERE
         $requete .= $this->getWhereString();
 
@@ -335,10 +341,6 @@ class QueryBuilder
                 $requete .= " ".chr($cpt + 64)."";
                 $requete .= $this->getWhereString();
             }
-        }
-
-        if (!empty($this->join)) {
-            $requete .= " ".$this->join['type']." JOIN ".$this->join['table']. " ON " .$this->join['on'];
         }
 
         if (!empty($this->group)) {

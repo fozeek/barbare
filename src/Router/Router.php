@@ -4,47 +4,50 @@ namespace Barbare\Framework\Router;
 
 class Router
 {
-    protected $route;
+    protected $routes = [];
     protected $config;
+    protected $cb;
 
-    public function __construct($config)
+    public function __construct($cb)
     {
-        $this->config = $config;
+        $cb($this);
     }
 
-    public function factory($url)
+    public function add($url, $callback, $name = null, $extends = false)
     {
-        $params = [];
-        $found = false;
-        foreach ($this->config as $name => $value) {
-            if (array_key_exists('url', $value)) {
-                if (preg_match_all('#^'.preg_replace('#({[^}]+})#', '([a-zA-Z0-9\-\_]+)', $value['url']).'$#', $url, $matches)) {
-                    preg_match_all('#{([^}]+)}#', $value['url'], $keys);
-                    $keys = next($keys);
-                    foreach ($keys as $match => $var) {
-                        $params[$var] = $matches[$match+1][0];
-                    }
-                    $found = true;
-                    break;
-                }
+        $this->routes[] = new Route($url, $callback, $name, $extends);
+    }
+
+    public function match($url)
+    {
+        foreach ($this->routes as $route) {
+            if($found = $route->match($url)) {
+                return $found;
             }
         }
-        if (!$found) {
-            $value = $this->config->toArray()['404'];
-            $params = [];
-        }
-
-        return new Route($value['controller'], $value['action'], $params);
+        die('no route found'); // TODO 404
     }
 
     public function url($routeName, $params = array())
     {
-        $url = $this->config->read($routeName)->read('url');
-
+        $found = $this->findRoute($routeName);
+        if(!$found) {
+            return false;
+        }
+        $url = $found->getFullUrl();
         foreach ($params as $key => $value) {
             $url = str_replace('{'.$key.'}', $value, $url);
         }
-
         return $url;
+    }
+
+    public function findRoute($routeName)
+    {
+        foreach ($this->routes as $route) {
+            if($matched = $route->matchName($routeName)) {
+                return $matched;
+            }
+        }
+        return false;
     }
 }

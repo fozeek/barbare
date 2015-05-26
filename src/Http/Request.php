@@ -52,8 +52,7 @@ class Request
 
     public function initDispatchEvent()
     {
-        $this->route = $this->container->get('router')->factory($this->getBaseUrl());
-
+        $this->route = $this->container->get('router')->match($this->getBaseUrl());
         return new Event([
             'route' => $this->route,
         ]);
