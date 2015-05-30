@@ -126,5 +126,40 @@ List of defaults services in container :
  * view : The main view of the application
 
 
+## MVC
+### Controller
+Il faut etendre la class Barbare\Framework\Mvc\Controller pour créer son controller
+C'est une action de votre controller qui est appellé lors d'un Dispatch
+Pour effectuer des traitements a l'initialisation du controller, vous devez les faire dans une method ``` init ```. Les composants sont initialisé avant l'appelle de cette methode.
+```php
+class MyController
+{
+    public function init()
+    {
+        // Do stuff
+    }
+    public function myAction($arg1, $arg2)
+    {
+        $this->get('model'); // Acces to 'model' component
+    }
+}
+```
+Some methods can be used : 
+* ``` dispatch($routeName, $params = []) ```, for dispatching an other callable route.
+* ``` redirect($routeName, $params = []) ```, for redirect to an other callable route
 
+### Components
+#### views
+Render your view ``` $this->get('view')->render($params = []); ```. This will stop the execuption script.
 
+Add params to your view : 
+```php
+$this->get('view')->setVariable($key, $value);
+OR
+$this->get('view')->setVariables($values);
+```
+
+Get the layout
+```php
+$this->get('view')->getLayout();
+```
