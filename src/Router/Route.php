@@ -25,6 +25,7 @@ class Route
     public function add($url, $callback, $name = null, $extends = false)
     {
         $this->childs[] = new Route($url, $callback, $name, $extends, $this);
+        return $this;
     }
 
     public function matchName($name)
@@ -107,6 +108,12 @@ class Route
     public function setParams($params)
     {
         $this->params = array_merge($this->params, $params);
+        return $this;
+    }
+
+    public function removeParam($key)
+    {
+        unset($this->params[$key]);
         return $this;
     }
 }

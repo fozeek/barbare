@@ -16,6 +16,12 @@ class Repository
         $this->schema = $schema;
     }
 
+    public function create($values)
+    {
+        $id = QueryBuilder::create()->insert($this->schema->name)->columnsValues($values)->execute();
+        return $this->findOneBy(['id' => $id]);
+    }
+
     public function getManager()
     {
         return $this->manager;
