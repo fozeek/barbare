@@ -32,4 +32,21 @@ class Session
         unset($this->data[$key]);
         unset($_SESSION[$key]);
     }
+
+    public function addFlashMessage($message)
+    {
+        $data = is_array($message) ? $message : [$message];
+        if(!$this->has('_flashmessages')) {
+            $this->add('_flashmessages', $data);
+        } else {
+            $this->add('_flashmessages', array_merge($this->get('_flasmessages'), $data));
+        }
+    }
+
+    public function getFlashMessages($message)
+    {
+        $fms = $this->get('_flasmessages');
+        $this->remove('_flasmessages');
+        return $fms;
+    }
 }
