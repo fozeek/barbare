@@ -97,4 +97,16 @@ class Route
         }
         return $this->params[$key];
     }
+
+    public function setParam($key, $value)
+    {
+        $this->params[$key] = $value;
+        return $this;
+    }
+
+    public function setParams($params)
+    {
+        $this->params = array_merge($this->params, $params);
+        return $this;
+    }
 }

@@ -25,7 +25,7 @@ class Router
                 return $found;
             }
         }
-        die('no route found'); // TODO 404
+        return $this->findRoute('error')->setParams(['code' => 404, 'message' => 'Page not found']);
     }
 
     public function url($routeName, $params = array())

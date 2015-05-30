@@ -7,20 +7,21 @@ use Barbare\Framework\Mvc\Component;
 class Auth extends Component
 {
     private $user = false;
+    private $container;
 
-    public function __construct($app, $controller)
+    public function __construct($container)
     {
-        $this->controller = $controller;
-        if ($this->controller->Session->has('id')) {
-            $this->user = $controller->Model->get('user')->findById($controller->Session->get('id'));
+        $this->container = $container;
+        if ($container->get('session')->has('_id')) {
+            $this->user = $container->get('model')->get('user')->findOneBy(['id' => $container->get('session')->get('_id')]);
         }
     }
 
     public function connect($pseudo, $password)
     {
-        $user = $this->controller->Model->get('user')->findByPseudo($pseudo);
+        $user = $this->container->get('model')->get('user')->findOneBy(['pseudo' => $pseudo]);
         if ($user && $user->get('password') == self::encrypt($password)) { // hash_equals for PHP >= 5.6
-            $this->controller->Session->add('id', $user->get('id'));
+            $this->container->get('session')->add('_id', $user->get('id'));
 
             return $this->user = $user;
         } else {
@@ -30,11 +31,11 @@ class Auth extends Component
 
     public function disconnect()
     {
-        $this->controller->Session->remove('id');
+        $this->container->get('session')->remove('_id');
         $this->user = false;
     }
 
-    public function isConnected()
+    public function isAuthenticated()
     {
         return $this->user !== false;
     }

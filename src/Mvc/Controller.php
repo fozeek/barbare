@@ -14,6 +14,7 @@ class Controller
         $this->application = $application;
         $this->components = new Container($this->application->getConfig()->read('components'));
         $this->components->add('application', $application);
+        $this->components->add('controller', $this);
 
         $this->init();
     }
@@ -23,9 +24,9 @@ class Controller
         return $this->components->get(strtolower($attribut));
     }
 
-    public function redirect($url)
+    public function redirect($url, $params = [])
     {
-        header('Location:'.$url);
+        header('Location:'.$this->get('application')->getService('router')->url($url, $params));
         die;
     }
 
@@ -33,8 +34,10 @@ class Controller
     {
     }
 
-    public function dispatch($route, $params = [])
+    public function dispatch($routeName, $params = [])
     {
-        call_user_func_array([new Dispatcher($this->application), 'call'], $params);
+        $route = $this->application->getService('router')->findRoute($routeName);
+        call_user_func_array([new Dispatcher($this->application), 'call'], ['route' => $route, 'params' => $params]);
+        die;
     }
 }

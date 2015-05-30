@@ -6,7 +6,7 @@ class Session
 {
     private $data;
 
-    public function __construct()
+    public function __construct($container)
     {
         $this->data = $_SESSION;
     }
