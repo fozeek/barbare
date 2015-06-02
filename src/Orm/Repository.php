@@ -68,12 +68,14 @@ class Repository
         if($this->schema->join) {
             $qb->join('LEFT', $this->schema->join, 'A.id = '.$this->schema->join.'.id');
         }
+        $qb->limit(0, 1);
         $cb($qb);
-        foreach ($qb->fetchArray() as $values) {
-            $collection[] = new Entity($this, $values);
-        }
+        $data = $qb->fetchArray(); 
+        if(count($data) < 1) {
+            return false;
+        }     
 
-        return new DbCollection($collection);
+        return new Entity($this, $data[0]);
     }
 
     public function findBy($wheres)
@@ -102,7 +104,12 @@ class Repository
         foreach ($wheres as $key => $value) {
             $qb->where($key, '=', $value);
         }
+        $qb->limit(0, 1);
+        $data = $qb->fetchArray(); 
+        if(count($data) < 1) {
+            return false;
+        }     
 
-        return new Entity($this, $qb->fetchArray()[0]);
+        return new Entity($this, $data[0]);
     }
 }

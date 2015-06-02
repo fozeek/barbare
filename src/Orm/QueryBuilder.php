@@ -204,7 +204,7 @@ class QueryBuilder
             $this->where[] = $attribut;
         } else {
             $type = count($this->where)>0 ? "andwhere" : "where";
-            $this->where[] = array("where", $attribut, $condition, $param, $typeVar);
+            $this->where[] = array($type, $attribut, $condition, $param, $typeVar);
         }
 
         return $this;
