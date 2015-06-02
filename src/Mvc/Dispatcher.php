@@ -20,7 +20,7 @@ class Dispatcher
         if(is_callable($event->getData()->read('route')->getCallback())) {
             $this->call($event->getData()->read('route'));
         } else {
-            $this->call($this->app->getService('router')->findRoute('error'), ['code' => 404, 'message' => 'The route is uncallable !']);
+            $this->call($this->app->getService('router')->findRoute('error'), ['code' => 404]);
         }
     }
 

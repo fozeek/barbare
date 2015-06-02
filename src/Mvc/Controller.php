@@ -37,6 +37,7 @@ class Controller
     public function dispatch($routeName, $params = [])
     {
         $route = $this->application->getService('router')->findRoute($routeName);
+        $params = is_array($params) ? $params : [$params];
         call_user_func_array([new Dispatcher($this->application), 'call'], ['route' => $route, 'params' => $params]);
         die;
     }
