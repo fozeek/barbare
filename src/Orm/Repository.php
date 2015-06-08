@@ -32,6 +32,19 @@ class Repository
         return $this->schema;
     }
 
+    public function save($entity)
+    {
+        $values = [];
+        $data = $entity->toArray();
+        foreach ($this->schema->attributs as $attribut) {
+            if(isset($data[$attribut->name]) && !is_array($data[$attribut->name])) {
+                $values[$attribut->name] = $data[$attribut->name];
+            }
+        }
+        //var_dump(QueryBuilder::create()->update($this->schema->name)->where('id', '=', $entity->get('id'))->columnsValues($values)->showRequete());die;
+        return QueryBuilder::create()->update($this->schema->name)->where('id', '=', $entity->get('id'))->columnsValues($values)->execute();
+    }
+
     public function findAll()
     {
         $collection = [];
@@ -102,7 +115,7 @@ class Repository
             $qb->join('LEFT', $this->schema->join, 'A.id = '.$this->schema->join.'.id');
         }
         foreach ($wheres as $key => $value) {
-            $qb->where($key, '=', $value);
+            $qb->where('A.'.$key, '=', $value);
         }
         $qb->limit(0, 1);
         $data = $qb->fetchArray(); 
