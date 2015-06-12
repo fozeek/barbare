@@ -42,7 +42,12 @@ class MManager
     {
         if(!isset($this->repositories[$name])) {
             if($schema = $this->schema->get($name)) {
-                $this->repositories[$name] = new Repository($this, $schema);
+                if($schema->repositoryClassName) {
+                    $repositoryClassName = $schema->repositoryClassName;
+                    $this->repositories[$name] = new $repositoryClassName($this, $schema);
+                } else {
+                    $this->repositories[$name] = new Repository($this, $schema);
+                }
             } else {
                 return false;
             }

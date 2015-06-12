@@ -13,6 +13,8 @@ class Table
     public $onModel;
     public $ephemeral = false;
     public $attributs = [];
+    public $entityClassName = false;
+    public $repositoryClassName = false;
 
     public function __construct($schema, $name, $onModel = true)
     {
@@ -85,6 +87,16 @@ class Table
         $this->attribut($attributName, function($attribut) use ($type, $cb) {
             $attribut->mapping($type, $cb);
         });
+    }
+
+    public function entity($entityClassName)
+    {
+        $this->entityClassName = $entityClassName;
+    }
+
+    public function repository($repositoryClassName)
+    {
+        $this->repositoryClassName = $repositoryClassName;
     }
 }
 

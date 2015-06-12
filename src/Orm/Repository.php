@@ -53,7 +53,7 @@ class Repository
             $qb->join('LEFT', $this->schema->join, 'A.id = '.$this->schema->join.'.id');
         }
         foreach ($qb->fetchArray() as $values) {
-            $collection[] = new Entity($this, $values);
+            $collection[] = $this->fillEntity($values);
         }
 
         return new DbCollection($collection);
@@ -68,7 +68,7 @@ class Repository
         }
         $cb($qb);
         foreach ($qb->fetchArray() as $values) {
-            $collection[] = new Entity($this, $values);
+            $collection[] = $this->fillEntity($values);
         }
 
         return new DbCollection($collection);
@@ -88,7 +88,7 @@ class Repository
             return false;
         }     
 
-        return new Entity($this, $data[0]);
+        return $this->fillEntity($data[0]);
     }
 
     public function findBy($wheres)
@@ -102,7 +102,7 @@ class Repository
             $qb->where($key, '=', $value);
         }
         foreach ($qb->fetchArray() as $values) {
-            $collection[] = new Entity($this, $values);
+            $collection[] = $this->fillEntity($values);
         }
 
         return new DbCollection($collection);
@@ -123,6 +123,11 @@ class Repository
             return false;
         }     
 
-        return new Entity($this, $data[0]);
+        return $this->fillEntity($data[0]);
+    }
+
+    private function fillEntity($data) {
+        $entityClassName = $this->schema->entityClassName ?: 'Barbare\Framework\Orm\Entity';
+        return new $entityClassName($this, $data);
     }
 }
