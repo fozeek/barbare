@@ -20,7 +20,10 @@ class Request
 
     public function getBaseUrl()
     {
-        return $_SERVER['REDIRECT_URL'];
+        if($pos = strpos($_SERVER['REQUEST_URI'], '?')) {
+            return substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], '?'));
+        }
+        return $_SERVER['REQUEST_URI'];
     }
 
     public function getData($key = false)
