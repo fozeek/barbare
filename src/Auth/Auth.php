@@ -52,19 +52,4 @@ class Auth extends Component
     {
         return md5(crypt($password, 'MY&SALT@VERY#COOL?THUG'));
     }
-
-    public function getUserByMail($mail)
-    {
-        if(is_string($mail)) {
-            $user = $this->container->get('model')->get('user')->findOneBy(['mail' => $mail]);
-            if ($user) return $user;
-        }
-        return false;
-    }
-
-    function generatePassword( $length = 8 ) {
-        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        $password = substr( str_shuffle( $chars ), 0, $length );
-        return $password;
-    }
 }
