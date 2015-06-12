@@ -30,6 +30,9 @@ class Request
             $_FILES
         );
         if ($key) {
+            if(!isset($data[$key])) {
+                return false;
+            }
             $data = $data[$key];
         }
 
