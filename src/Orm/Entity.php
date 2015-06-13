@@ -20,11 +20,16 @@ class Entity
     {
         if (isset($this->attributs[$attribut])) {
             return $this->attributs[$attribut];
-        } elseif ($this->schema->get($attribut)->mapping) {
+        } elseif ($this->schema->get($attribut) && $this->schema->get($attribut)->mapping) {
             return $this->attributs[$attribut] = $this->_build($attribut);
         }
 
         return false;
+    }
+
+    public function getRepository()
+    {
+        return $this->repository;
     }
 
     public function getInheritance()
@@ -44,7 +49,7 @@ class Entity
         } elseif ($schemAttribut->mapping->type == 'oneToMany') {
             return $foreignRepo->findBy([$schemAttribut->mapping->foreignKey => intval($this->get('id'))]);
         } elseif ($schemAttribut->mapping->type == 'manyToOne') {
-            return $foreignRepo->findOneBy('id', intval($this->attributs[$schemAttribut->mapping->associatedKey]));
+            return $foreignRepo->findOneBy(['id' => intval($this->attributs[$schemAttribut->mapping->associatedKey])]);
         } elseif ($schemAttribut->mapping->type == 'oneToOne') {
             if ($schemAttribut->mapping->containDependancy) {
                 return $foreignRepo->findOneBy([$schemAttribut->mapping->table.'.id' => intval($this->attributs[$schemAttribut->mapping->associatedKey])]);

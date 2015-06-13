@@ -145,7 +145,7 @@ class Repository
 
     private function fillEntity($data)
     {
-        $entityClassName = $this->schema->entityClassName ?: 'Barbare\Framework\Orm\Entity';
+        $entityClassName = $this->schema->getEntityClassName() ?: 'Barbare\Framework\Orm\Entity';
 
         return new $entityClassName($this, $data);
     }

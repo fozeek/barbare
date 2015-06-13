@@ -12,14 +12,38 @@ class Table
     public $onModel;
     public $ephemeral = false;
     public $attributs = [];
-    public $entityClassName = false;
-    public $repositoryClassName = false;
+    private $entityClassName = false;
+    private $repositoryClassName = false;
 
     public function __construct($schema, $name, $onModel = true)
     {
         $this->onModel = $onModel;
         $this->name = $name;
         $this->schema = $schema;
+    }
+
+    public function getEntityClassName()
+    {
+        if($this->entityClassName) {
+            return $this->entityClassName;
+        } elseif ($this->join) {
+            if($this->schema->get($this->join)->getEntityClassName()) {
+                return $this->schema->get($this->join)->getEntityClassName();
+            }
+        }
+        return false;
+    }
+
+    public function getRepositoryClassName()
+    {
+        if($this->repositoryClassName) {
+            return $this->repositoryClassName;
+        } elseif ($this->join) {
+            if($this->schema->get($this->join)->getRepositoryClassName()) {
+                return $this->schema->get($this->join)->getRepositoryClassName();
+            }
+        }
+        return false;
     }
 
     public function attribut($name, $cb, $onModel = true)
