@@ -21,33 +21,36 @@ class Router
     public function match($url)
     {
         foreach ($this->routes as $route) {
-            if($found = $route->match($url)) {
+            if ($found = $route->match($url)) {
                 return $found;
             }
         }
+
         return $this->findRoute('error')->setParams(['code' => 404, 'message' => 'Page not found']);
     }
 
     public function url($routeName, $params = array())
     {
         $found = $this->findRoute($routeName);
-        if(!$found) {
+        if (!$found) {
             return false;
         }
         $url = $found->getFullUrl();
         foreach ($params as $key => $value) {
             $url = str_replace('{'.$key.'}', $value, $url);
         }
+
         return $url;
     }
 
     public function findRoute($routeName)
     {
         foreach ($this->routes as $route) {
-            if($matched = $route->matchName($routeName)) {
+            if ($matched = $route->matchName($routeName)) {
                 return $matched;
             }
         }
+
         return false;
     }
 }

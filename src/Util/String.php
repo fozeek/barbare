@@ -5,8 +5,8 @@ namespace Barbare\Framework\Util;
 class String
 {
     public static function slugify($text)
-    { 
-      // replace non letter or digits by -
+    {
+        // replace non letter or digits by -
       $text = preg_replace('~[^\\pL\d]+~u', '-', $text);
 
       // trim
@@ -21,11 +21,10 @@ class String
       // remove unwanted characters
       $text = preg_replace('~[^-\w]+~', '', $text);
 
-      if (empty($text))
-      {
-        return 'n-a';
-      }
+        if (empty($text)) {
+            return 'n-a';
+        }
 
-      return $text;
+        return $text;
     }
 }

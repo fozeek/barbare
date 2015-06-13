@@ -2,8 +2,6 @@
 
 namespace Barbare\Framework\Orm;
 
-use Barbare\Framework\Orm\QueryBuilder;
-use Barbare\Framework\Orm\Repository\DbCollection;
 
 class Entity
 {
@@ -29,7 +27,8 @@ class Entity
         return false;
     }
 
-    public function getInheritance() {
+    public function getInheritance()
+    {
         return $this->get('_join_table_name');
     }
 
@@ -37,8 +36,8 @@ class Entity
     {
         $schemAttribut = $this->schema->attributs->get($attribut);
         $foreignRepo = $this->repository->getManager()->get($schemAttribut->mapping->table);
-        if($assoc['type'] == 'manyToMany') {
-            return $foreignRepo->findAllCallback(function($qb) {
+        if ($assoc['type'] == 'manyToMany') {
+            return $foreignRepo->findAllCallback(function ($qb) {
                 $qb->from($this->schema->name.'_'.$foreignRepo->name)
                     ->where($schemAttribut->mapping->associatedKey, '=', $schemAttribut->mapping->foreignKey);
             });
@@ -47,7 +46,7 @@ class Entity
         } elseif ($assoc['type'] == 'manyToOne') {
             return $foreignRepo->findOneBy('id', intval($this->attributs[$schemAttribut->mapping->associatedKey]));
         } elseif ($assoc['type'] == 'oneToOne') {
-            if($schemAttribut->mapping->containDependancy) {
+            if ($schemAttribut->mapping->containDependancy) {
                 return $foreignRepo->findOneBy([$schemAttribut->mapping->table.'.id' => intval($this->attributs[$schemAttribut->mapping->associatedKey])]);
             } else {
                 return $foreignRepo->findOneBy([$schemAttribut->mapping->foreignKey => $schemAttribut->mapping->table.'.id']);

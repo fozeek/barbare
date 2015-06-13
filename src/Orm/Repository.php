@@ -2,7 +2,6 @@
 
 namespace Barbare\Framework\Orm;
 
-use Barbare\Framework\Orm\QueryBuilder;
 use Barbare\Framework\Orm\Repository\DbCollection;
 
 class Repository
@@ -22,10 +21,12 @@ class Repository
         // Do special stuff (pre-save)
         foreach ($this->schema->attributs as $attribut) {
             foreach ($attribut->events['create'] as $cb) {
-                $values[$attribut->name] = $cb($entity);
+                $cb = $cb->bindTo($entity);
+                $values[$attribut->name] = $cb();
             }
         }
         $id = QueryBuilder::create()->insert($this->schema->name)->columnsValues($values)->execute();
+
         return $this->findOneBy(['id' => $id]);
     }
 
@@ -45,7 +46,7 @@ class Repository
         $values = [];
         $data = $entity->toArray();
         foreach ($this->schema->attributs as $attribut) {
-            if(isset($data[$attribut->name]) && !is_array($data[$attribut->name])) {
+            if (isset($data[$attribut->name]) && !is_array($data[$attribut->name])) {
                 $values[$attribut->name] = $data[$attribut->name];
             }
         }
@@ -53,7 +54,8 @@ class Repository
         // Do special stuff (pre-save)
         foreach ($this->schema->attributs as $attribut) {
             foreach ($attribut->events['save'] as $cb) {
-                $values[$attribut->name] = $cb($entity);
+                $cb = $cb->bindTo($entity);
+                $values[$attribut->name] = $cb();
             }
         }
 
@@ -64,7 +66,7 @@ class Repository
     {
         $collection = [];
         $qb = QueryBuilder::create()->from($this->schema->name);
-        if($this->schema->join) {
+        if ($this->schema->join) {
             $qb->join('LEFT', $this->schema->join, 'A.id = '.$this->schema->join.'.id');
         }
         foreach ($qb->fetchArray() as $values) {
@@ -78,7 +80,7 @@ class Repository
     {
         $collection = [];
         $qb = QueryBuilder::create()->from($this->schema->name);
-        if($this->schema->join) {
+        if ($this->schema->join) {
             $qb->join('LEFT', $this->schema->join, 'A.id = '.$this->schema->join.'.id');
         }
         $cb($qb);
@@ -93,15 +95,15 @@ class Repository
     {
         $collection = [];
         $qb = QueryBuilder::create()->from($this->schema->name);
-        if($this->schema->join) {
+        if ($this->schema->join) {
             $qb->join('LEFT', $this->schema->join, 'A.id = '.$this->schema->join.'.id');
         }
         $qb->limit(0, 1);
         $cb($qb);
-        $data = $qb->fetchArray(); 
-        if(count($data) < 1) {
+        $data = $qb->fetchArray();
+        if (count($data) < 1) {
             return false;
-        }     
+        }
 
         return $this->fillEntity($data[0]);
     }
@@ -110,7 +112,7 @@ class Repository
     {
         $collection = [];
         $qb = QueryBuilder::create()->from($this->schema->name);
-        if($this->schema->join) {
+        if ($this->schema->join) {
             $qb->join('LEFT', $this->schema->join, 'A.id = '.$this->schema->join.'.id');
         }
         foreach ($wheres as $key => $value) {
@@ -126,23 +128,25 @@ class Repository
     public function findOneBy($wheres)
     {
         $qb = QueryBuilder::create()->from($this->schema->name);
-        if($this->schema->join) {
+        if ($this->schema->join) {
             $qb->join('LEFT', $this->schema->join, 'A.id = '.$this->schema->join.'.id');
         }
         foreach ($wheres as $key => $value) {
             $qb->where('A.'.$key, '=', $value);
         }
         $qb->limit(0, 1);
-        $data = $qb->fetchArray(); 
-        if(count($data) < 1) {
+        $data = $qb->fetchArray();
+        if (count($data) < 1) {
             return false;
-        }     
+        }
 
         return $this->fillEntity($data[0]);
     }
 
-    private function fillEntity($data) {
+    private function fillEntity($data)
+    {
         $entityClassName = $this->schema->entityClassName ?: 'Barbare\Framework\Orm\Entity';
+
         return new $entityClassName($this, $data);
     }
 }

@@ -37,7 +37,7 @@ class Manager
 
     public function get($name)
     {
-        if(!isset($this->repositories[$name])) {
+        if (!isset($this->repositories[$name])) {
             $repository = $this->container->get('application')->getConfig()->read('models.'.$name);
             if (is_string($repository)) {
                 $this->repositories[$name] = new $repository($name, $this);
@@ -45,6 +45,7 @@ class Manager
                 $this->repositories[$name] = $repository(new Repository($name, $this));
             }
         }
+
         return $this->repositories[$name];
     }
 
@@ -52,6 +53,7 @@ class Manager
     {
         $schema = new Schema($this->container->get('application')->getConfig()->read('db.database'));
         $cb($schema);
+
         return $schema;
     }
 }

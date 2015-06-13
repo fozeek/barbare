@@ -17,7 +17,7 @@ class Route
         $this->url = $url;
         $this->name = $name;
         $this->parent = $parent;
-        if($extends) {
+        if ($extends) {
             $extends($this);
         }
     }
@@ -25,28 +25,31 @@ class Route
     public function add($url, $callback, $name = null, $extends = false)
     {
         $this->childs[] = new Route($url, $callback, $name, $extends, $this);
+
         return $this;
     }
 
     public function matchName($name)
     {
-        if($this->getFullName() == $name) {
+        if ($this->getFullName() == $name) {
             return $this;
         }
         foreach ($this->childs as $route) {
-            if($matched = $route->matchName($name)) {
+            if ($matched = $route->matchName($name)) {
                 return $matched;
             }
         }
+
         return false;
     }
 
     public function getFullName()
     {
         $name = $this->name;
-        if($this->parent) {
+        if ($this->parent) {
             $name = $this->parent->getFullName().'/'.$name;
         }
+
         return $name;
     }
 
@@ -59,25 +62,28 @@ class Route
             foreach ($keys as $match => $var) {
                 $this->params[$var] = $matches[$match+1][0];
             }
+
             return $this;
         }
         foreach ($this->childs as $route) {
-            if($matched = $route->match($url)) {
+            if ($matched = $route->match($url)) {
                 return $matched;
             }
         }
+
         return false;
     }
 
     public function getFullUrl($params = [])
     {
         $url = $this->url;
-        if($this->parent) {
+        if ($this->parent) {
             $url = $this->parent->getFullUrl($params).$url;
         }
         foreach ($params as $key => $value) {
             $url = str_replace('{'.$key.'}', $value, $url);
         }
+
         return $url;
     }
 
@@ -93,27 +99,31 @@ class Route
 
     public function getParam($key)
     {
-        if(!isset($this->params[$key])) {
+        if (!isset($this->params[$key])) {
             return false;
         }
+
         return $this->params[$key];
     }
 
     public function setParam($key, $value)
     {
         $this->params[$key] = $value;
+
         return $this;
     }
 
     public function setParams($params)
     {
         $this->params = array_merge($this->params, $params);
+
         return $this;
     }
 
     public function removeParam($key)
     {
         unset($this->params[$key]);
+
         return $this;
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Barbare\Framework\Orm\Schema;
 
-use Barbare\Framework\Orm\Schema\Table;
 use Barbare\Framework\Orm\DbConnect;
 use Barbare\Framework\Orm\Sql;
 use PDO;
@@ -33,38 +32,40 @@ class Schema
 
     public function getBehavior($name)
     {
-        if(!isset($this->behaviors[$name])) {
+        if (!isset($this->behaviors[$name])) {
             return false;
         }
+
         return $this->behaviors[$name];
     }
 
     public function get($table)
     {
-        if(!isset($this->tables[$table])) {
+        if (!isset($this->tables[$table])) {
             return false;
         }
+
         return $this->tables[$table];
     }
 
     private function build()
     {
-        if(!$this->build) {
+        if (!$this->build) {
             $this->build = true;
             $instanciatedConstraints = [];
             foreach ($this->tables as $table) {
-                if(!$table->ephemeral) {
+                if (!$table->ephemeral) {
                     foreach ($table->attributs as $attribut) {
-                        if($attribut->mapping) {
+                        if ($attribut->mapping) {
                             $mapping = $attribut->mapping;
-                            if($mapping->type == 'manyToMany') {
+                            if ($mapping->type == 'manyToMany') {
                                 // On ajoute la table de jointure au schema
-                                $this->table($mapping->associatedTable, function($table) use ($mapping) {
-                                    $table->attribut($mapping->associatedKey, function($attribut) {
+                                $this->table($mapping->associatedTable, function ($table) use ($mapping) {
+                                    $table->attribut($mapping->associatedKey, function ($attribut) {
                                         $attribut->type('int', 11);
                                         $attribut->index();
                                     });
-                                    $table->attribut($mapping->foreignKey, function($attribut) {
+                                    $table->attribut($mapping->foreignKey, function ($attribut) {
                                         $attribut->type('int', 11);
                                         $attribut->index();
                                     });
@@ -73,17 +74,16 @@ class Schema
                                     'associated' => ['table' => $mapping->associatedTable, 'column' => $mapping->associatedKey],
                                     'foreign' => ['table' => $table->name, 'column' => 'id'],
                                     'delete' => 'CASCADE',
-                                    'update' => 'NO ACTION'
+                                    'update' => 'NO ACTION',
                                 ];
                                 $instanciatedConstraints[] = [
                                     'associated' => ['table' => $mapping->associatedTable, 'column' => $mapping->foreignKey],
                                     'foreign' => ['table' => $mapping->table, 'column' => 'id'],
                                     'delete' => 'CASCADE',
-                                    'update' => 'NO ACTION'
+                                    'update' => 'NO ACTION',
                                 ];
-                            }
-                            elseif($mapping->type == 'manyToOne' || ($mapping->type == 'oneToOne' && $mapping->containDependancy)) {
-                                $table->attribut($mapping->associatedKey, function($attribut) {
+                            } elseif ($mapping->type == 'manyToOne' || ($mapping->type == 'oneToOne' && $mapping->containDependancy)) {
+                                $table->attribut($mapping->associatedKey, function ($attribut) {
                                     $attribut->type('int', 11);
                                     $attribut->index();
                                     $attribut->null();
@@ -92,11 +92,10 @@ class Schema
                                     'associated' => ['table' => $table->name, 'column' => $mapping->associatedKey],
                                     'foreign' => ['table' => $mapping->table, 'column' => 'id'],
                                     'delete' => 'SET NULL',
-                                    'update' => 'NO ACTION'
+                                    'update' => 'NO ACTION',
                                 ];
-                            }
-                            elseif($mapping->type == 'oneToMany' || ($mapping->type == 'oneToOne' && !$mapping->containDependancy)) {
-                                $this->get($mapping->table)->attribut($mapping->foreignKey, function($attribut) {
+                            } elseif ($mapping->type == 'oneToMany' || ($mapping->type == 'oneToOne' && !$mapping->containDependancy)) {
+                                $this->get($mapping->table)->attribut($mapping->foreignKey, function ($attribut) {
                                     $attribut->type('int', 11);
                                     $attribut->index();
                                     $attribut->null();
@@ -105,7 +104,7 @@ class Schema
                                     'associated' => ['table' => $mapping->table, 'column' => $mapping->foreignKey],
                                     'foreign' => ['table' => $table->name, 'column' => 'id'],
                                     'delete' => 'SET NULL',
-                                    'update' => 'NO ACTION'
+                                    'update' => 'NO ACTION',
                                 ];
                             }
                         }
@@ -114,6 +113,7 @@ class Schema
             }
             $this->instanciatedConstraints = $instanciatedConstraints;
         }
+
         return $this->instanciatedConstraints;
     }
 
@@ -123,6 +123,7 @@ class Schema
         foreach ($this->tables as $name => $table) {
             $sql .= $table->getSql().PHP_EOL.PHP_EOL;
         }
+
         return $sql;
     }
 
@@ -131,42 +132,42 @@ class Schema
         $this->build();
         $string = "";
         foreach ($this->tables as $table) {
-            if((!$model && !$table->ephemeral) || ($model && $table->onModel)) {
+            if ((!$model && !$table->ephemeral) || ($model && $table->onModel)) {
                 $string .= "\033[1;32m".(!$model ? $table->name : ucfirst($table->name))."\033[0m";
-                if($table->join && $model) {
+                if ($table->join && $model) {
                     $string .= " extends \033[1;32m".ucfirst($table->join)."\033[0m";
                 }
                 $string .= PHP_EOL;
                 $attributs = [];
-                foreach ($table->attributs as $attribut) { 
-                    if(
+                foreach ($table->attributs as $attribut) {
+                    if (
                         (!$model || ($model && $attribut->onModel))
                         && (($attribut->mapping && $model) || (!$attribut->mapping))
                     ) {
                         $options = [];
-                        if($attribut->autoIncrement) {
+                        if ($attribut->autoIncrement) {
                             $options[] = "AUTO_INCREMENT";
                         }
-                        if($attribut->primaryKey) {
+                        if ($attribut->primaryKey) {
                             $options[] = "PRIMARY KEY";
-                        } elseif($attribut->unique) {
+                        } elseif ($attribut->unique) {
                             $options[] = "UNIQUE";
-                        } elseif($attribut->index) {
+                        } elseif ($attribut->index) {
                             $options[] = "INDEX";
                         }
                         $needed = "\033[0m*";
                         $length = 20;
-                        if($attribut->nullable || $attribut->mapping) {
+                        if ($attribut->nullable || $attribut->mapping) {
                             $needed = "";
                             $length = 16;
                         }
                         $attributString = "├── \033[1;35m".str_pad($attribut->name.$needed, $length)."\033[0m";
-                        if(!$model) {
+                        if (!$model) {
                             $attributString .= "\033[0;37m ".$attribut->type."(".$attribut->typeOptions.") ".implode(" ", $options)."\033[0m";
                         } else {
-                            if($attribut->mapping) {
+                            if ($attribut->mapping) {
                                 $attributString .= "\033[0;37m ".ucfirst($attribut->mapping->table);
-                                if($attribut->mapping->type == 'oneToMany' || $attribut->mapping->type == 'manyToMany') {
+                                if ($attribut->mapping->type == 'oneToMany' || $attribut->mapping->type == 'manyToMany') {
                                     $attributString .= "[]";
                                 }
                                 $attributString .= "\033[0m";
@@ -175,7 +176,7 @@ class Schema
                         $attributs[] = $attributString;
                     }
                 }
-                if(count($attributs) > 0) {
+                if (count($attributs) > 0) {
                     end($attributs);
                     $attributs[key($attributs)] = "└── ".substr($attributs[key($attributs)], 10);
                     $string .= implode(PHP_EOL, $attributs);
@@ -183,6 +184,7 @@ class Schema
                 $string .= PHP_EOL;
             }
         }
+
         return $string;
     }
 
@@ -196,7 +198,7 @@ class Schema
         foreach ($data as $value) {
             unset($value['TABLE_CATALOG']);
             unset($value['TABLE_SCHEMA']);
-            if(!isset($schema[$value['TABLE_NAME']])) {
+            if (!isset($schema[$value['TABLE_NAME']])) {
                 $schema[$value['TABLE_NAME']] = [];
             }
             $schema[$value['TABLE_NAME']][$value['COLUMN_NAME']] = $value;
@@ -207,82 +209,82 @@ class Schema
         $dropAttrs = "";
 
         foreach ($this->tables as $table) {
-            if(!$table->ephemeral) {
-                if(array_key_exists($table->name, $schema)) {
+            if (!$table->ephemeral) {
+                if (array_key_exists($table->name, $schema)) {
                     // On cherche les ≠ entre les attributs
                     foreach ($table->attributs as $attribut) {
-                        if(!$attribut->mapping) {
-                            if(array_key_exists($attribut->name, $schema[$table->name])) {
+                        if (!$attribut->mapping) {
+                            if (array_key_exists($attribut->name, $schema[$table->name])) {
                                 $isAutoIncrement = $schema[$table->name][$attribut->name]['EXTRA'] == "auto_increment";
                                 $isNullable = $schema[$table->name][$attribut->name]['IS_NULLABLE'] == "YES";
                                 $isPrimaryKey = $schema[$table->name][$attribut->name]['COLUMN_KEY'] == "PRI";
                                 // On teste si ils sont égaux
                                 $same = true;
                                 $type = $attribut->type;
-                                if($attribut->typeOptions) {
+                                if ($attribut->typeOptions) {
                                     $type .= "(".$attribut->typeOptions.")";
                                 }
-                                if($type == 'boolean') {
+                                if ($type == 'boolean') {
                                     $type = 'tinyint(1)';
                                 }
-                                if(
-                                    $schema[$table->name][$attribut->name]['COLUMN_DEFAULT'] != ($attribut->default === false ? NULL: $attribut->default)
+                                if (
+                                    $schema[$table->name][$attribut->name]['COLUMN_DEFAULT'] != ($attribut->default === false ? null : $attribut->default)
                                     || $schema[$table->name][$attribut->name]['COLUMN_TYPE'] != $type
                                 ) {
                                     $same = false;
                                 }
-                                if($isNullable != $attribut->nullable || $isAutoIncrement != $attribut->autoIncrement) {
+                                if ($isNullable != $attribut->nullable || $isAutoIncrement != $attribut->autoIncrement) {
                                     $same = false;
                                 }
-                                if(!$same) {
+                                if (!$same) {
                                     $count++;
-                                    $sql .= "ALTER TABLE `".$table->name."` CHANGE `".$attribut->name."` " .Sql::attribut($attribut).";".PHP_EOL; 
-                                    if($attribut->primaryKey && $schema[$table->name][$attribut->name]['EXTRA'] != "auto_increment") { // Il faut ajouter l'index Primary key pour definir le champs en AUTO_INCREMENT
-                                        if(!$isPrimaryKey) {
+                                    $sql .= "ALTER TABLE `".$table->name."` CHANGE `".$attribut->name."` ".Sql::attribut($attribut).";".PHP_EOL;
+                                    if ($attribut->primaryKey && $schema[$table->name][$attribut->name]['EXTRA'] != "auto_increment") { // Il faut ajouter l'index Primary key pour definir le champs en AUTO_INCREMENT
+                                        if (!$isPrimaryKey) {
                                             $count++;
                                             $sql .= "ALTER TABLE `".$table->name."` ADD PRIMARY KEY(`".$attribut->name."`);".PHP_EOL;
                                         }
                                         $count++;
-                                        $sql .= "ALTER TABLE `".$table->name."` CHANGE `".$attribut->name."` " .Sql::attribut($attribut, true).";".PHP_EOL;
+                                        $sql .= "ALTER TABLE `".$table->name."` CHANGE `".$attribut->name."` ".Sql::attribut($attribut, true).";".PHP_EOL;
                                     }
                                 }
                                 unset($schema[$table->name][$attribut->name]);
                             } else {
                                 $count++;
-                                $sql .= "ALTER TABLE `".$table->name."` ADD " .Sql::attribut($attribut).";".PHP_EOL;
-                                if($attribut->primaryKey) { // Il faut ajouter l'index Primary key pour definir le champs en AUTO_INCREMENT
+                                $sql .= "ALTER TABLE `".$table->name."` ADD ".Sql::attribut($attribut).";".PHP_EOL;
+                                if ($attribut->primaryKey) { // Il faut ajouter l'index Primary key pour definir le champs en AUTO_INCREMENT
                                     $count++;
                                     $sql .= "ALTER TABLE `".$table->name."` ADD PRIMARY KEY(`".$attribut->name."`);".PHP_EOL;
                                     $count++;
-                                    $sql .= "ALTER TABLE `".$table->name."` CHANGE `".$attribut->name."` " .Sql::attribut($attribut, true).";".PHP_EOL;
+                                    $sql .= "ALTER TABLE `".$table->name."` CHANGE `".$attribut->name."` ".Sql::attribut($attribut, true).";".PHP_EOL;
                                 }
                             }
                         }
                     }
                     foreach ($schema[$table->name] as $attr) {
-                        if($attr['COLUMN_KEY'] == "") {
+                        if ($attr['COLUMN_KEY'] == "") {
                             $count++;
                             $sql .= "ALTER TABLE `".$table->name."` DROP `".$attr['COLUMN_NAME']."`;".PHP_EOL;
                         } else {
                             $count++;
-                            $dropAttrs .= "ALTER TABLE `".$table->name."` DROP `".$attr['COLUMN_NAME']."`;".PHP_EOL;;
+                            $dropAttrs .= "ALTER TABLE `".$table->name."` DROP `".$attr['COLUMN_NAME']."`;".PHP_EOL;
                         }
                     }
                 } else {
                     $count = 0;
                     foreach ($table->attributs as $attr) {
-                        if(!$attr->mapping) {
+                        if (!$attr->mapping) {
                             $count++;
                         }
                     }
-                    if($count > 0) {
+                    if ($count > 0) {
                         $sql .= Sql::table($table);
                     }
                 }
             }
         }
 
-        if($sql != "") {
+        if ($sql != "") {
             print("Tables & Columns".PHP_EOL);
             print($sql);
             try {
@@ -297,33 +299,33 @@ class Schema
         $data = DbConnect::getConnection()->query("SELECT * FROM `information_schema`.`STATISTICS` WHERE `INDEX_SCHEMA` LIKE '".$this->db."' ORDER BY TABLE_NAME")->fetchAll(PDO::FETCH_ASSOC);
         $indexes = [];
         foreach ($data as $value) {
-            if(!isset($indexes[$value['TABLE_NAME']])) {
+            if (!isset($indexes[$value['TABLE_NAME']])) {
                 $indexes[$value['TABLE_NAME']] = [];
             }
             $indexes[$value['TABLE_NAME']][$value['COLUMN_NAME']] = $value;
         }
 
         foreach ($this->tables as $table) {
-            if(!$table->ephemeral) {
-                if(array_key_exists($table->name, $indexes)) {
+            if (!$table->ephemeral) {
+                if (array_key_exists($table->name, $indexes)) {
                     foreach ($table->attributs as $attribut) {
-                        if(array_key_exists($attribut->name, $indexes[$table->name])) {
-                            if(!$attribut->primaryKey && !$attribut->unique && !$attribut->index) { // On supprime l'index en trop
+                        if (array_key_exists($attribut->name, $indexes[$table->name])) {
+                            if (!$attribut->primaryKey && !$attribut->unique && !$attribut->index) { // On supprime l'index en trop
                                 continue; // L'index sera supprimé dans le collecteur en fin de boucle
                             }
                             $isPrimary = $indexes[$table->name][$attribut->name]['INDEX_NAME'] == 'PRIMARY';
                             $isUnique = $indexes[$table->name][$attribut->name]['NON_UNIQUE'] == '0';
-                            if(
+                            if (
                                 $isPrimary != $attribut->primaryKey
                                 || (!$attribut->primaryKey && ($isUnique != $attribut->unique)) // On s'occupe de l'unicité que si il ne s'agit pas d'une primary key
                             ) {
                                 // On change l'index mal configuré
-                                if($attribut->primaryKey) {
+                                if ($attribut->primaryKey) {
                                     $action = "PRIMARY KEY";
                                     $count++;
                                     $sql .= "ALTER TABLE `".$table->name."` DROP INDEX `".$indexes[$table->name][$attribut->name]['INDEX_NAME']."`, ADD ".$action." (`".$attribut->name."`);".PHP_EOL;
-                                } elseif($attribut->unique) {
-                                    if($isPrimary) {
+                                } elseif ($attribut->unique) {
+                                    if ($isPrimary) {
                                         $count++;
                                         $sql .= "ALTER TABLE `".$table->name."` DROP PRIMARY KEY, ADD UNIQUE (`".$attribut->name."`);".PHP_EOL;
                                     } else {
@@ -332,8 +334,8 @@ class Schema
                                         $count++;
                                         $sql .= "ALTER TABLE `".$table->name."` ADD UNIQUE (`".$attribut->name."`);".PHP_EOL;
                                     }
-                                } elseif($attribut->index) {
-                                    if($isPrimary) {
+                                } elseif ($attribut->index) {
+                                    if ($isPrimary) {
                                         $count++;
                                         $sql .= "ALTER TABLE `".$table->name."` DROP PRIMARY KEY, ADD INDEX (`".$attribut->name."`);".PHP_EOL;
                                     } else {
@@ -359,16 +361,16 @@ class Schema
                     foreach ($table->attributs as $attribut) {
                         $sql .= $this->addIndex($table, $attribut, $count);
                         // Si auto_increment, on ajoute (car on l'a zappé si on vient de créer la table)
-                        if($attribut->autoIncrement) {
+                        if ($attribut->autoIncrement) {
                             $count++;
-                            $sql .= "ALTER TABLE `".$table->name."` CHANGE `".$attribut->name."` " .Sql::attribut($attribut, true).";".PHP_EOL;
+                            $sql .= "ALTER TABLE `".$table->name."` CHANGE `".$attribut->name."` ".Sql::attribut($attribut, true).";".PHP_EOL;
                         }
                     }
                 }
             }
         }
 
-        if($sql != "") {
+        if ($sql != "") {
             print("Indexs".PHP_EOL);
             print($sql);
             try {
@@ -379,14 +381,13 @@ class Schema
             $sql = "";
         }
 
-
         // On créer toutes les contraintes (tables de jointure créee)
         $constraints = DbConnect::getConnection()->query("SELECT * FROM `information_schema`.`KEY_COLUMN_USAGE` WHERE `CONSTRAINT_SCHEMA` LIKE '".$this->db."' AND `POSITION_IN_UNIQUE_CONSTRAINT` = 1 ORDER BY TABLE_NAME")->fetchAll(PDO::FETCH_ASSOC);
 
         // on check les doublons
-        for ($cpt1=0; $cpt1 < count($this->instanciatedConstraints); $cpt1++) { 
-            for ($cpt2=$cpt1+1; $cpt2 < count($this->instanciatedConstraints); $cpt2++) { 
-                if(
+        for ($cpt1 = 0; $cpt1 < count($this->instanciatedConstraints); $cpt1++) {
+            for ($cpt2 = $cpt1+1; $cpt2 < count($this->instanciatedConstraints); $cpt2++) {
+                if (
                     $this->instanciatedConstraints[$cpt2] != null
                     && $this->instanciatedConstraints[$cpt1]['associated']['table'] == $this->instanciatedConstraints[$cpt2]['associated']['table']
                     && $this->instanciatedConstraints[$cpt1]['associated']['column'] == $this->instanciatedConstraints[$cpt2]['associated']['column']
@@ -403,7 +404,7 @@ class Schema
             $founds = [];
             $found = false;
             foreach ($constraints as $key => $constraintDb) {
-                if(
+                if (
                     $constraintDb['TABLE_NAME'] == $constraint['associated']['table']
                     && $constraintDb['COLUMN_NAME'] == $constraint['associated']['column']
                     && $constraintDb['REFERENCED_TABLE_NAME'] == $constraint['foreign']['table']
@@ -415,7 +416,7 @@ class Schema
                     unset($constraints[$key]);
                 }
             }
-            if(!$found) {
+            if (!$found) {
                 $count++;
                 // on créer la contrainte
                 $name = "BB".$constraint['associated']['table'].$constraint['associated']['column'].$constraint['foreign']['table'].$constraint['foreign']['column'];
@@ -443,8 +444,7 @@ class Schema
 
         $sql .= $dropAttrs;
 
-
-        if($sql != "") {
+        if ($sql != "") {
             print("Constraints".PHP_EOL);
             print($sql);
             try {
@@ -455,35 +455,38 @@ class Schema
             $sql = "";
         }
 
-        
         return $count;
     }
 
     private function addIndex($table, $attribut, &$count)
     {
         $sql = "";
-        if($attribut->primaryKey) {
+        if ($attribut->primaryKey) {
             $count++;
             $sql = "ALTER TABLE `".$table->name."` ADD PRIMARY KEY(`".$attribut->name."`);".PHP_EOL;
-        } elseif($attribut->unique) {
+        } elseif ($attribut->unique) {
             $count++;
             $sql = "ALTER TABLE `".$table->name."` ADD UNIQUE(`".$attribut->name."`);".PHP_EOL;
-        } elseif($attribut->index) {
+        } elseif ($attribut->index) {
             $count++;
             $sql = "ALTER TABLE `".$table->name."` ADD INDEX(`".$attribut->name."`);".PHP_EOL;
         }
+
         return $sql;
     }
 
-    private function exec($requete, $debug = true) {
+    private function exec($requete, $debug = true)
+    {
         try {
             $return = DbConnect::getConnection()->exec($requete);
         } catch (\PDOException $e) {
-            if($debug) {
+            if ($debug) {
                 return $e->getMessage();
             }
+
             return false;
         }
+
         return $return;
     }
 }
@@ -526,7 +529,6 @@ class Schema
     string(0) ""
 
 */
-
 
 /*
 

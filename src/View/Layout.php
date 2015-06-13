@@ -18,9 +18,10 @@ class Layout
 
     public function getVariable($key)
     {
-        if(!isset($this->variables[$key])) {
+        if (!isset($this->variables[$key])) {
             return false;
         }
+
         return $this->variables[$key];
     }
 

@@ -20,9 +20,10 @@ class Request
 
     public function getBaseUrl()
     {
-        if($pos = strpos($_SERVER['REQUEST_URI'], '?')) {
+        if ($pos = strpos($_SERVER['REQUEST_URI'], '?')) {
             return substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], '?'));
         }
+
         return $_SERVER['REQUEST_URI'];
     }
 
@@ -33,13 +34,13 @@ class Request
             $_FILES
         );
         if ($key) {
-            if(!isset($data[$key])) {
+            if (!isset($data[$key])) {
                 return false;
             }
             $data = $data[$key];
         }
 
-        if(isset($data['PHPSESSID'])) {
+        if (isset($data['PHPSESSID'])) {
             unset($data['PHPSESSID']);
         }
 
@@ -59,6 +60,7 @@ class Request
     public function initDispatchEvent()
     {
         $this->route = $this->container->get('router')->match($this->getBaseUrl());
+
         return new Event([
             'route' => $this->route,
         ]);

@@ -2,7 +2,6 @@
 
 namespace Barbare\Framework\Orm\Schema;
 
-use Barbare\Framework\Orm\Schema\Attribut;
 
 class Mapping
 {
@@ -24,21 +23,21 @@ class Mapping
     public function table($table)
     {
         $this->table = $table;
-        if(!$this->associatedKey) {
-            if($this->type != "manyToMany") {
+        if (!$this->associatedKey) {
+            if ($this->type != "manyToMany") {
                 $this->associatedKey = $table.'_id';
             } else {
                 $this->associatedKey = $this->attribut->table->name.'_id';
             }
         }
-        if(!$this->foreignKey) {
-            if($this->type != "manyToMany") {
+        if (!$this->foreignKey) {
+            if ($this->type != "manyToMany") {
                 $this->foreignKey = $this->attribut->table->name.'_id';
             } else {
                 $this->foreignKey = $table.'_id';
             }
         }
-        if($this->type == "manyToMany" && !$this->associatedTable) {
+        if ($this->type == "manyToMany" && !$this->associatedTable) {
             $this->associatedTable = $this->attribut->table->name.'_'.$table;
         }
     }

@@ -36,7 +36,7 @@ class Session
     public function addFlashMessage($message)
     {
         $data = is_array($message) ? $message : [$message];
-        if(!$this->has('_flashmessages')) {
+        if (!$this->has('_flashmessages')) {
             $this->add('_flashmessages', $data);
         } else {
             $this->add('_flashmessages', array_merge($this->get('_flasmessages'), $data));
@@ -47,6 +47,7 @@ class Session
     {
         $fms = $this->get('_flasmessages');
         $this->remove('_flasmessages');
+
         return $fms;
     }
 }

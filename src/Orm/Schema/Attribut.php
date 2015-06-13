@@ -2,7 +2,6 @@
 
 namespace Barbare\Framework\Orm\Schema;
 
-use Barbare\Framework\Orm\Schema\Mapping;
 use Barbare\Framework\Orm\Sql;
 
 class Attribut
@@ -50,7 +49,7 @@ class Attribut
 
     public function on($events, $cb)
     {
-        if(!is_array($events)) {
+        if (!is_array($events)) {
             $events = [$events];
         }
         foreach ($events as $event) {

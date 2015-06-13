@@ -320,7 +320,7 @@ class QueryBuilder
 
         // JOIN
         if (!empty($this->join)) {
-            $requete .= " ".$this->join['type']." JOIN ".$this->join['table']. " ON " .$this->join['on'];
+            $requete .= " ".$this->join['type']." JOIN ".$this->join['table']." ON ".$this->join['on'];
         }
 
         // WHERE
@@ -411,7 +411,7 @@ class QueryBuilder
                 if ($cpt != 0) {
                     $requete .= ", ";
                 }
-                if($this->values[$cpt] === NULL) {
+                if ($this->values[$cpt] === null) {
                     $this->values[$cpt] = 'NULL';
                 }
                 $requete .= $value." = ".$cote.addslashes($this->values[$cpt]).$cote;

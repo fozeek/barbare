@@ -28,13 +28,10 @@ class DbCollection implements Iterator
     {
         $tab_en_ordre = false;
         $taille = count($this->data);
-        while(!$tab_en_ordre)
-        {
+        while (!$tab_en_ordre) {
             $tab_en_ordre = true;
-            for($i=0 ; $i < $taille-1 ; $i++)
-            {
-                if(!$cb($this->data[$i], $this->data[$i+1]))
-                {
+            for ($i = 0; $i < $taille-1; $i++) {
+                if (!$cb($this->data[$i], $this->data[$i+1])) {
                     $tmp = $this->data[$i];
                     $this->data[$i] = $this->data[$i+1];
                     $this->data[$i+1] = $tmp;
@@ -43,6 +40,7 @@ class DbCollection implements Iterator
             }
             $taille--;
         }
+
         return $this;
     }
 
@@ -58,9 +56,10 @@ class DbCollection implements Iterator
 
     public function get($key)
     {
-        if(isset($this->data[$key])) {
+        if (isset($this->data[$key])) {
             return $this->data[$key];
         }
+
         return false;
     }
 

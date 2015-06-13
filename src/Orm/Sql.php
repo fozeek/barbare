@@ -4,7 +4,7 @@ namespace Barbare\Framework\Orm;
 
 class Sql
 {
-    static public function table($table)
+    public static function table($table)
     {
         $string = "CREATE TABLE `".$table->name."` (".PHP_EOL;
         // $indexes = [];
@@ -13,7 +13,7 @@ class Sql
         // $uniques = [];
         // $primaries = [];
         foreach ($table->attributs as $attribut) {
-            if(!$attribut->mapping) {
+            if (!$attribut->mapping) {
                 $attributs[] = $attribut->getSql();
                 // if($attribut->index) {
                 //     $indexes[] = $attribut;
@@ -53,27 +53,28 @@ class Sql
         return $string;
     }
 
-    static public function attribut($attribut, $ai = false)
+    public static function attribut($attribut, $ai = false)
     {
         $string = "`".$attribut->name."` ";
         $string .= $attribut->type;
-        if(!empty($attribut->typeOptions)) {
+        if (!empty($attribut->typeOptions)) {
             $string .= "(".$attribut->typeOptions.")";
         }
-        if(!$attribut->nullable) {
+        if (!$attribut->nullable) {
             $string .= " NOT NULL";
         }
-        if($ai && $attribut->autoIncrement) {
+        if ($ai && $attribut->autoIncrement) {
             $string .= " AUTO_INCREMENT";
         }
-        if($attribut->default !== false) {
-            if($attribut->default === null) {
+        if ($attribut->default !== false) {
+            if ($attribut->default === null) {
                 $attribut->default = "NULL";
-            } elseif($attribut->default != "CURRENT_TIMESTAMP") {
+            } elseif ($attribut->default != "CURRENT_TIMESTAMP") {
                 $attribut->default = "'".$attribut->default."'";
             }
             $string .= " DEFAULT ".$attribut->default;
         }
+
         return $string;
     }
 }

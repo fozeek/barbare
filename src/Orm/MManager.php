@@ -2,7 +2,6 @@
 
 namespace Barbare\Framework\Orm;
 
-use Barbare\Framework\Orm\Repository;
 use Barbare\Framework\Orm\Schema\Schema;
 
 class MManager
@@ -40,9 +39,9 @@ class MManager
 
     public function get($name)
     {
-        if(!isset($this->repositories[$name])) {
-            if($schema = $this->schema->get($name)) {
-                if($schema->repositoryClassName) {
+        if (!isset($this->repositories[$name])) {
+            if ($schema = $this->schema->get($name)) {
+                if ($schema->repositoryClassName) {
                     $repositoryClassName = $schema->repositoryClassName;
                     $this->repositories[$name] = new $repositoryClassName($this, $schema);
                 } else {
@@ -52,6 +51,7 @@ class MManager
                 return false;
             }
         }
+
         return $this->repositories[$name];
     }
 
@@ -59,6 +59,7 @@ class MManager
     {
         $schema = new Schema($this->container->get('application')->getConfig()->read('db.database'));
         $cb($schema);
+
         return $schema;
     }
 }

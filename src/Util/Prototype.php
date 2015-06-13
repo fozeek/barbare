@@ -2,7 +2,6 @@
 
 namespace Barbare\Framework\Util;
 
-use Barbare\Framework\Mvc\Component;
 use Exception;
 
 class Prototype
@@ -20,11 +19,14 @@ class Prototype
         $this->methods[$name] = $method;
     }
 
-    public function __call($method, $args){
-        if(array_key_exists($method, $this->methods)) {
+    public function __call($method, $args)
+    {
+        if (array_key_exists($method, $this->methods)) {
             throw new Exception("Error Processing Method ".$method." for ".get_class($this->object)." object.", 1);
+
             return false;
         }
+
         return call_user_func_array($this->method[$method]->bind($this->object), $args);
     }
 }

@@ -19,16 +19,19 @@ class Auth extends Component
 
     public function connect($pseudo, $password = null)
     {
-        if(is_string($pseudo) && $password !== null) {
+        if (is_string($pseudo) && $password !== null) {
             $user = $this->container->get('model')->get('user')->findOneBy(['pseudo' => $pseudo]);
             if ($user && $user->get('password') == self::encrypt($password)) { // hash_equals for PHP >= 5.6
                 $this->container->get('session')->add('_id', $user->get('id'));
+
                 return $this->user = $user;
             }
+
             return $this->user = false;
         }
         $this->user = $pseudo;
         $this->container->get('session')->add('_id', $this->user->get('id'));
+
         return $this->user;
     }
 

@@ -43,7 +43,7 @@ class Entity
     private function _fetchAssoc($assoc)
     {
         $foreignRepo = $this->repository->getManager()->get($assoc['reference']);
-        if($assoc['type'] == 'manyToMany') {
+        if ($assoc['type'] == 'manyToMany') {
             $data = QueryBuilder::create()->from([$this->repository->getTableName().'_'.$assoc['reference'], $foreignRepo->getTableName()])
                 ->where($this->get('id'), '=', 'A.'.$this->repository->getTableName().'_id', false)
                 ->andWhere('A.'.$assoc['reference'].'_id', '=', 'B.id', false)
@@ -57,14 +57,15 @@ class Entity
             foreach ($data as $values) {
                 $collection[] = new $entityClassName($foreignRepo, $this->repository->afterFind($values));
             }
+
             return new DbCollection($collection);
         } elseif ($assoc['type'] == 'oneToMany') {
             return $foreignRepo->findBy($this->repository->getTableName().'_id', intval($this->get('id')));
         } elseif ($assoc['type'] == 'manyToOne') {
-            if($this->attributs[$assoc['reference'].'_id'] !== NULL) {
+            if ($this->attributs[$assoc['reference'].'_id'] !== null) {
                 return $foreignRepo->findOneBy('id', intval($this->attributs[$assoc['reference'].'_id']));
             } else {
-                return NULL;
+                return;
             }
         }
     }
