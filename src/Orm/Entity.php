@@ -34,18 +34,18 @@ class Entity
 
     private function _build($attribut)
     {
-        $schemAttribut = $this->schema->attributs->get($attribut);
+        $schemAttribut = $this->schema->get($attribut);
         $foreignRepo = $this->repository->getManager()->get($schemAttribut->mapping->table);
-        if ($assoc['type'] == 'manyToMany') {
+        if ($schemAttribut->mapping->type == 'manyToMany') {
             return $foreignRepo->findAllCallback(function ($qb) {
                 $qb->from($this->schema->name.'_'.$foreignRepo->name)
-                    ->where($schemAttribut->mapping->associatedKey, '=', $schemAttribut->mapping->foreignKey);
+                    ->where($schemAttribut->mapping->associatedKey, '=', $schemAttribut->mapping->foreignKey, false);
             });
-        } elseif ($assoc['type'] == 'oneToMany') {
-            return $foreignRepo->findAllBy([$schemAttribut->mapping->foreignKey => intval($this->get('id'))]);
-        } elseif ($assoc['type'] == 'manyToOne') {
+        } elseif ($schemAttribut->mapping->type == 'oneToMany') {
+            return $foreignRepo->findBy([$schemAttribut->mapping->foreignKey => intval($this->get('id'))]);
+        } elseif ($schemAttribut->mapping->type == 'manyToOne') {
             return $foreignRepo->findOneBy('id', intval($this->attributs[$schemAttribut->mapping->associatedKey]));
-        } elseif ($assoc['type'] == 'oneToOne') {
+        } elseif ($schemAttribut->mapping->type == 'oneToOne') {
             if ($schemAttribut->mapping->containDependancy) {
                 return $foreignRepo->findOneBy([$schemAttribut->mapping->table.'.id' => intval($this->attributs[$schemAttribut->mapping->associatedKey])]);
             } else {

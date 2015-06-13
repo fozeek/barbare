@@ -82,7 +82,16 @@ class Table
 
     public function get($attribut)
     {
-        return $this->attributs[$attribut];
+        if(isset($this->attributs[$attribut])) { // self attribut
+            return $this->attributs[$attribut];
+        } 
+        if($this->join) { // parent attribut
+            $joinModel = $this->schema->get($this->join);
+            if($joinModel->get($attribut) !== false) {
+                return $joinModel->get($attribut);
+            }
+        }
+        return false;
     }
 
     public function mapping($attributName, $type, $cb)
