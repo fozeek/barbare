@@ -18,6 +18,13 @@ class Repository
 
     public function create($values)
     {
+        $entity = $this->fillEntity($values);
+        // Do special stuff (pre-save)
+        foreach ($this->schema->attributs as $attribut) {
+            foreach ($attribut->events['create'] as $cb) {
+                $values[$attribut->name] = $cb($entity);
+            }
+        }
         $id = QueryBuilder::create()->insert($this->schema->name)->columnsValues($values)->execute();
         return $this->findOneBy(['id' => $id]);
     }
@@ -34,6 +41,7 @@ class Repository
 
     public function save($entity)
     {
+        // Format data
         $values = [];
         $data = $entity->toArray();
         foreach ($this->schema->attributs as $attribut) {
@@ -41,7 +49,14 @@ class Repository
                 $values[$attribut->name] = $data[$attribut->name];
             }
         }
-        //var_dump(QueryBuilder::create()->update($this->schema->name)->where('id', '=', $entity->get('id'))->columnsValues($values)->showRequete());die;
+
+        // Do special stuff (pre-save)
+        foreach ($this->schema->attributs as $attribut) {
+            foreach ($attribut->events['save'] as $cb) {
+                $values[$attribut->name] = $cb($entity);
+            }
+        }
+
         return QueryBuilder::create()->update($this->schema->name)->where('id', '=', $entity->get('id'))->columnsValues($values)->execute();
     }
 

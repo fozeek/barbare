@@ -16,7 +16,7 @@ class Attribut
     public $type = 'text';
     public $unique = false;
     public $typeOptions = "";
-    public $events = [];
+    public $events = ['create' => [], 'save' => []];
     public $nullable = false;
     public $index = false;
     public $mapping = false;
@@ -48,9 +48,14 @@ class Attribut
         $cb($this->mapping);
     }
 
-    public function on($event, $cb)
+    public function on($events, $cb)
     {
-        $this->events[$event] = $cb;
+        if(!is_array($events)) {
+            $events = [$events];
+        }
+        foreach ($events as $event) {
+            $this->events[$event][] = $cb;
+        }
     }
 
     public function defaultValue($default)
