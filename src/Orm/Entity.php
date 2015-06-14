@@ -23,7 +23,6 @@ class Entity
         } elseif ($this->schema->get($attribut) && $this->schema->get($attribut)->mapping) {
             return $this->attributs[$attribut] = $this->_build($attribut);
         }
-
         return false;
     }
 
@@ -42,9 +41,9 @@ class Entity
         $schemAttribut = $this->schema->get($attribut);
         $foreignRepo = $this->repository->getManager()->get($schemAttribut->mapping->table);
         if ($schemAttribut->mapping->type == 'manyToMany') {
-            return $foreignRepo->findAllCallback(function ($qb) {
-                $qb->from($this->schema->name.'_'.$foreignRepo->name)
-                    ->where($schemAttribut->mapping->associatedKey, '=', $schemAttribut->mapping->foreignKey, false);
+            return $foreignRepo->findAllCallback(function ($qb) use ($schemAttribut) {
+                $qb->from($schemAttribut->mapping->associatedTable)
+                    ->where('A.id', '=', 'B.'.$schemAttribut->mapping->foreignKey, false);
             });
         } elseif ($schemAttribut->mapping->type == 'oneToMany') {
             return $foreignRepo->findBy([$schemAttribut->mapping->foreignKey => intval($this->get('id'))]);

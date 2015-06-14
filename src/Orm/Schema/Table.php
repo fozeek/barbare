@@ -9,6 +9,7 @@ class Table
     public $schema;
     public $name;
     public $join = false;
+    private $tableName = false;
     public $onModel;
     public $ephemeral = false;
     public $attributs = [];
@@ -20,6 +21,19 @@ class Table
         $this->onModel = $onModel;
         $this->name = $name;
         $this->schema = $schema;
+    }
+
+    public function getTableName()
+    {
+        if($tableName) {
+            return $this->tableName;
+        }
+        return $name;
+    }
+
+    public function tableName($tableName)
+    {
+        $this->tableName = $tableName;
     }
 
     public function getEntityClassName()
@@ -76,10 +90,6 @@ class Table
             $attribut->type('int', 11);
             $attribut->unique();
         });
-        // $this->schema->get($table)->attribut('_join_table_id', function($attribut) {
-        //     $attribut->type('int', 11);
-        //     $attribut->null();
-        // }, false);
     }
 
     public function attributs($attributs, $onModel = true)
