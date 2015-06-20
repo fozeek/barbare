@@ -20,6 +20,7 @@ class Attribut
     public $index = false;
     public $mapping = false;
     public $default = false;
+    public $validate = false;
 
     public function __construct($table, $name, $onModel = true)
     {
@@ -37,6 +38,11 @@ class Attribut
     {
         $this->type = $type;
         $this->typeOptions = $options;
+    }
+
+    public function validate($callback)
+    {
+        $this->validate = $callback;
     }
 
     public function mapping($type, $cb)

@@ -19,12 +19,17 @@ class Repository
     {
         $entity = $this->fillEntity($values);
         // Do special stuff (pre-save)
+        $errors = [];
         foreach ($this->schema->attributs as $attribut) {
             foreach ($attribut->events['create'] as $cb) {
                 $cb = $cb->bindTo($entity);
                 $values[$attribut->name] = $cb();
             }
         }
+        if(!$entity->check()) {
+            return false;
+        }
+
         $id = QueryBuilder::create()->insert($this->schema->name)->columnsValues($values)->execute();
 
         return $this->findOneBy(['id' => $id]);

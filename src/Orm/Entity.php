@@ -26,6 +26,26 @@ class Entity
         return false;
     }
 
+    public function check()
+    {
+        $errors = [];
+        foreach ($this->schema->attributs as $attribut) {
+            // Check with custom validate
+            if($attribut->validate) {
+                if(is_callable($attribut->validate)) {
+                    $cb = $attribut->validate->bindTo($this);
+                    if(!$cb($this->get($attribut))) {
+                        $errors[] = $attribut->name;
+                    }
+                } elseif(is_string($attribut->validate)) {
+                    //check with Validator provider
+                }
+            }
+            // check with database rules
+        }
+        return $errors;
+    }
+
     public function getRepository()
     {
         return $this->repository;
