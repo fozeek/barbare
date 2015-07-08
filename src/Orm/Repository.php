@@ -15,7 +15,7 @@ class Repository
         $this->schema = $schema;
     }
 
-    public function create($values)
+    public function create($values, $check = true)
     {
         $entity = $this->fillEntity($values);
         // Do special stuff (pre-save)
@@ -26,8 +26,11 @@ class Repository
                 $values[$attribut->name] = $cb();
             }
         }
-        if(!$entity->check()) {
-            return false;
+        if($check) {
+            $errors = $entity->check();
+            if(count($errors) > 0) {
+                return false;
+            }
         }
 
         $id = QueryBuilder::create()->insert($this->schema->name)->columnsValues($values)->execute();

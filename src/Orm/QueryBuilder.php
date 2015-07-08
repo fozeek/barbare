@@ -447,7 +447,7 @@ class QueryBuilder
         $requete = $this->getRequete();
         self::$COUNT += 1;
         self::$HISTO[] = $requete;
-
+        
         return DbConnect::getConnection()->query($requete)->fetchAll(PDO::FETCH_ASSOC);
     }
 

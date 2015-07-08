@@ -28,16 +28,19 @@ class Layout
     public function setTemplate($template)
     {
         $this->template = $template;
+        return $this;
     }
 
     public function setVariable($key, $value)
     {
         $this->variables[$key] = $value;
+        return $this;
     }
 
     public function setVariables($array)
     {
         $this->variables = array_merge($this->variables, $array);
+        return $this;
     }
 
     public function render($content)

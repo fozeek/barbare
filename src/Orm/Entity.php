@@ -46,6 +46,11 @@ class Entity
         return $errors;
     }
 
+    public function save()
+    {
+        return $this->getRepository()->save($this);
+    }
+
     public function getRepository()
     {
         return $this->repository;
