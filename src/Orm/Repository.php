@@ -33,8 +33,9 @@ class Repository
             }
         }
 
-        $id = QueryBuilder::create()->insert($this->schema->name)->columnsValues($values)->execute();
-
+        $id = QueryBuilder::create()->insert($this->schema->name)->columnsValues($values)->execute(true);
+        if(isset($values['id'])) $id = $values['id'];
+        
         return $this->findOneBy(['id' => $id]);
     }
 

@@ -10,7 +10,7 @@ class DbCollection implements Iterator
     private $repository;
     private $position = 0;
 
-    public function __construct($collection)
+    public function __construct($collection = [])
     {
         $this->data = $collection;
     }
@@ -22,6 +22,11 @@ class DbCollection implements Iterator
         }
 
         return $this;
+    }
+
+    public function add($entity)
+    {
+        $this->data[] = $entity;
     }
 
     public function order($cb)
@@ -44,9 +49,26 @@ class DbCollection implements Iterator
         return $this;
     }
 
-    public function orderBy($attribut, $order)
+    public function last()
     {
-        die('TO DO =D');
+        return end($this->data);
+    }
+
+    public function orderBy($attribut, $order = 'ASC')
+    {
+        return $this->order(function($i, $f) use ($attribut, $order) {
+            $iValue = is_string($attribut) ? $i->get($attribut) : $attribut($i);
+            $fValue = is_string($attribut) ? $f->get($attribut) : $attribut($f);
+
+            if($iValue == $fValue) return 0;
+            else {
+                if($order == 'ASC') {
+                    $iValue > $fValue;
+                } else {
+                    $iValue < $fValue;
+                }
+            }
+        });
     }
 
     public function count()
@@ -71,16 +93,15 @@ class DbCollection implements Iterator
                 $res[] = $entity;
             }
         }
-        $this->data = $res;
 
-        return $this;
+        return new Self($res);
     }
 
     public function slice($offset, $length = 20)
     {
-        $this->data = array_slice($this->data, $offset, $length);
+        $res = array_slice($this->data, $offset, $length);
 
-        return $this;
+        return new Self($res);
     }
 
     public function contains($entity)
@@ -96,6 +117,7 @@ class DbCollection implements Iterator
 
     private function compareEntities($entity1, $entity2)
     {
+        return get_class($entity1) == get_class($entity2) && $entity1->get('id') == $entity2->get('id');
     }
 
     public function rewind()
