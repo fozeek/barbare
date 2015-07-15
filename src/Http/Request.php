@@ -27,6 +27,14 @@ class Request
         return $_SERVER['REQUEST_URI'];
     }
 
+    public function getParam($key = false)
+    {
+        if($key) {
+            return $_GET[$key];
+        }
+        return $_GET;
+    }
+
     public function getData($key = false)
     {
         $data = array_merge(

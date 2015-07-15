@@ -35,7 +35,7 @@ class Repository
 
         $id = QueryBuilder::create()->insert($this->schema->name)->columnsValues($values)->execute(true);
         if(isset($values['id'])) $id = $values['id'];
-        
+
         return $this->findOneBy(['id' => $id]);
     }
 
@@ -55,7 +55,7 @@ class Repository
         $values = [];
         $data = $entity->toArray();
         foreach ($this->schema->attributs as $attribut) {
-            if (isset($data[$attribut->name]) && !is_array($data[$attribut->name])) {
+            if (isset($data[$attribut->name]) && !is_array($data[$attribut->name]) && !is_object($data[$attribut->name])) {
                 $values[$attribut->name] = $data[$attribut->name];
             }
         }

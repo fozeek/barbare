@@ -29,29 +29,15 @@ class DbCollection implements Iterator
         $this->data[] = $entity;
     }
 
-    public function order($cb)
-    {
-        $tab_en_ordre = false;
-        $taille = count($this->data);
-        while (!$tab_en_ordre) {
-            $tab_en_ordre = true;
-            for ($i = 0; $i < $taille-1; $i++) {
-                if (!$cb($this->data[$i], $this->data[$i+1])) {
-                    $tmp = $this->data[$i];
-                    $this->data[$i] = $this->data[$i+1];
-                    $this->data[$i+1] = $tmp;
-                    $tab_en_ordre = false;
-                }
-            }
-            $taille--;
-        }
-
-        return $this;
-    }
-
     public function last()
     {
         return end($this->data);
+    }
+
+    public function order($cb)
+    {
+        usort($this->data, $cb);
+        return $this;
     }
 
     public function orderBy($attribut, $order = 'ASC')
@@ -59,13 +45,12 @@ class DbCollection implements Iterator
         return $this->order(function($i, $f) use ($attribut, $order) {
             $iValue = is_string($attribut) ? $i->get($attribut) : $attribut($i);
             $fValue = is_string($attribut) ? $f->get($attribut) : $attribut($f);
-
             if($iValue == $fValue) return 0;
             else {
                 if($order == 'ASC') {
-                    $iValue > $fValue;
+                    return $iValue > $fValue ? 1: -1;
                 } else {
-                    $iValue < $fValue;
+                    return $iValue < $fValue ? 1: -1;
                 }
             }
         });
